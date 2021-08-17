@@ -1,7 +1,7 @@
 //imports
 const express = require('express')
 const morgan = require('morgan')
-const routes = require('./routes/index')
+const routes = require('./src/routes/index')
 
 const app = express()
 
@@ -14,7 +14,7 @@ app.use(morgan("dev"))//TODO, DELETED
 
 //routes
 //app.use(routes)
-require('./routes')(app);
+require('./src/routes')(app);
 
 app.get('/', async (req, res) => {
   res.send('Back corriendo')
