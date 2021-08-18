@@ -1,7 +1,9 @@
-import _sequelize from 'sequelize';
-const { Model, Sequelize } = _sequelize;
+const Sequelize = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  return roles_permisos.init(sequelize, DataTypes);
+}
 
-export default class roles_permisos extends Model {
+class roles_permisos extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {

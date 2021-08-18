@@ -1,7 +1,9 @@
-import _sequelize from 'sequelize';
-const { Model, Sequelize } = _sequelize;
+const Sequelize = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  return stock_actualizar_detalle.init(sequelize, DataTypes);
+}
 
-export default class stock_actualizar_detalle extends Model {
+class stock_actualizar_detalle extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
