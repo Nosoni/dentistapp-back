@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class usuarios_roles extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,22 +12,21 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Alias del usuario"
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
+    usuario_id: {
       type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
+      allowNull: false,
+      comment: "Campo que hace referencia a un usuario",
       references: {
-        model: 'funcionarios',
+        model: 'usuarios',
+        key: 'id'
+      }
+    },
+    rol_id: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Campo que hace referencia a un rol",
+      references: {
+        model: 'roles',
         key: 'id'
       }
     },
@@ -35,16 +34,16 @@ export default class usuarios extends Model {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el rol del usuario está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'usuarios_roles',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "usuario_rol_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +51,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return usuarios_roles;
   }
 }

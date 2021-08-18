@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class especialidades extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,22 +12,22 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    nombre: {
+      type: DataTypes.STRING(30),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Nombre de la especialidad"
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
+    descripcion: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      comment: "Descripción de la especialidad"
     },
-    funcionario_id: {
+    especialidad_padre_id: {
       type: DataTypes.SMALLINT,
       allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
+      comment: "Campo que hace referencia a una especialidad de mayor jerarquía",
       references: {
-        model: 'funcionarios',
+        model: 'especialidades',
         key: 'id'
       }
     },
@@ -35,16 +35,16 @@ export default class usuarios extends Model {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si la especialidad está o no activa"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'especialidades',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "especialidad_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +52,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return especialidades;
   }
 }

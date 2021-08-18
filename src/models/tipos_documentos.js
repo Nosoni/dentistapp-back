@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class tipos_documentos extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,30 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    descripcion: {
+      type: DataTypes.STRING(15),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Campo que representa la descripción del tipo de documento"
     },
-    password: {
-      type: DataTypes.STRING,
+    abreviacion: {
+      type: DataTypes.STRING(5),
       allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
-      type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
-      references: {
-        model: 'funcionarios',
-        key: 'id'
-      }
+      comment: "Campo que representa el tipo de documento abreviado"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el tipo de documento está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'tipos_documentos',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "tipo_documento_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +43,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return tipos_documentos;
   }
 }

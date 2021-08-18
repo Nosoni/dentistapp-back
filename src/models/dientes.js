@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class dientes extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,36 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    codigo: {
+      type: DataTypes.STRING(5),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Código del diente"
     },
-    password: {
-      type: DataTypes.STRING,
+    temporal: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      comment: "Texto secreto que valida al usuario"
+      defaultValue: false,
+      comment: "Determina si el diente es uno temporal"
     },
-    funcionario_id: {
+    cantidad_caras: {
       type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
-      references: {
-        model: 'funcionarios',
-        key: 'id'
-      }
+      allowNull: false,
+      comment: "Determina la cantidad de caras del diente"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el diente está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'dientes',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "diente_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +49,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return dientes;
   }
 }

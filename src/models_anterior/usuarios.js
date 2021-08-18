@@ -1,9 +1,19 @@
-import _sequelize from 'sequelize';
-const { Model, Sequelize } = _sequelize;
-
-export default class usuarios extends Model {
-  static init(sequelize, DataTypes) {
-  super.init({
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class usuarios extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+    }
+  };
+  usuarios.init({
     id: {
       autoIncrement: true,
       autoIncrementIdentity: true,
@@ -37,21 +47,25 @@ export default class usuarios extends Model {
       defaultValue: true,
       comment: "Indica si el usuario está o no activo"
     }
-  }, {
-    sequelize,
-    tableName: 'usuarios',
-    schema: 'public',
-    timestamps: false,
-    indexes: [
-      {
-        name: "usuario_pk",
-        unique: true,
-        fields: [
-          { name: "id" },
-        ]
-      },
-    ]
-  });
+  },
+    // {
+    //   sequelize,
+    //   modelName: 'usuarios',
+    // }
+    {
+      sequelize,
+      tableName: 'usuarios',
+      schema: 'public',
+      timestamps: false,
+      indexes: [
+        {
+          name: "usuario_pk",
+          unique: true,
+          fields: [
+            { name: "id" },
+          ]
+        },
+      ]
+    });
   return usuarios;
-  }
-}
+};

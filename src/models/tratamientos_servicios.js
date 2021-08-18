@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class tratamientos_servicios extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,40 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    nombre: {
+      type: DataTypes.STRING(30),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Nombre del tratamiento o servicio"
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
-      type: DataTypes.SMALLINT,
+    descripcion: {
+      type: DataTypes.STRING(100),
       allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
-      references: {
-        model: 'funcionarios',
-        key: 'id'
-      }
+      comment: "Descripción del tratamiento o servicio"
+    },
+    precio: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      comment: "Precio del tratamiento o servicio"
+    },
+    tiempo: {
+      type: DataTypes.TIME,
+      allowNull: true,
+      comment: "Tiempo que conlleva la atención del tratamiento o servicio"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el tratamiento o servicio está o no activa"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'tratamientos_servicios',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "tratamiento_servicio_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +53,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return tratamientos_servicios;
   }
 }

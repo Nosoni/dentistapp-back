@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class estados_movimientos extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,45 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    tabla_id: {
+      type: DataTypes.STRING(20),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Nombre de la tabla"
     },
-    password: {
-      type: DataTypes.STRING,
+    estado_actual: {
+      type: DataTypes.STRING(10),
       allowNull: false,
-      comment: "Texto secreto que valida al usuario"
+      comment: "Estado actual del proceso"
     },
-    funcionario_id: {
+    estado_anterior_id: {
       type: DataTypes.SMALLINT,
       allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
+      comment: "Campo que hace referencia al estado anterior",
       references: {
-        model: 'funcionarios',
+        model: 'estados_movimientos',
         key: 'id'
       }
+    },
+    puede_avanzar: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "Campo que indica si puede avanzar el proceso al siguiente estado"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el estado del movimiento está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'estados_movimientos',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "estado_movimiento_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +58,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return estados_movimientos;
   }
 }

@@ -1,50 +1,43 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class condiciones_pago extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
-      autoIncrement: true,
-      autoIncrementIdentity: true,
       type: DataTypes.SMALLINT,
       allowNull: false,
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Alias del usuario"
+    codigo: {
+      type: DataTypes.STRING(15),
+      allowNull: false
     },
-    password: {
-      type: DataTypes.STRING,
+    descripcion: {
+      type: DataTypes.STRING(30),
       allowNull: false,
-      comment: "Texto secreto que valida al usuario"
+      comment: "Descripción de la condición de pago"
     },
-    funcionario_id: {
+    cuotas: {
       type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
-      references: {
-        model: 'funcionarios',
-        key: 'id'
-      }
+      allowNull: false,
+      comment: "Cantidad de cuotas de la condición de pago"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si la condición de pago está o no activa"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'condiciones_pago',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "condicion_pago_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +45,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return condiciones_pago;
   }
 }

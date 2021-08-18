@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class cobranzas extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,48 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    fecha: {
+      type: DataTypes.DATEONLY,
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Fecha de la cobranza"
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
+    paciente_id: {
       type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
+      allowNull: false,
+      comment: "Campo que hace referencia a un paciente",
       references: {
-        model: 'funcionarios',
+        model: 'pacientes',
         key: 'id'
       }
+    },
+    estado_cobranza_id: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Campo que hace referencia al estado de la cobranza",
+      references: {
+        model: 'estados_movimientos',
+        key: 'id'
+      }
+    },
+    comprobante: {
+      type: DataTypes.STRING(15),
+      allowNull: false,
+      comment: "Comprobante de la cobranza"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si la cobranza está o no activa"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'cobranzas',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "cobranza_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +61,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return cobranzas;
   }
 }

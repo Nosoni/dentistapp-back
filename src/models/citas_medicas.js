@@ -1,0 +1,75 @@
+import _sequelize from 'sequelize';
+const { Model, Sequelize } = _sequelize;
+
+export default class citas_medicas extends Model {
+  static init(sequelize, DataTypes) {
+  super.init({
+    id: {
+      autoIncrement: true,
+      autoIncrementIdentity: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      comment: "Código identificador autogenerado",
+      primaryKey: true
+    },
+    paciente_id: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Campo que hace referencia a un paciente",
+      references: {
+        model: 'pacientes',
+        key: 'id'
+      }
+    },
+    fecha_inicio: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "Fecha de inicio de la cita médica"
+    },
+    fecha_fin: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "Fecha fin de la cita médica"
+    },
+    usuario_id: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Campo que hace referencia a un usuario",
+      references: {
+        model: 'usuarios',
+        key: 'id'
+      }
+    },
+    estado_cita_id: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Campo que hace referencia al estado de la cita médica",
+      references: {
+        model: 'estados_movimientos',
+        key: 'id'
+      }
+    },
+    activo: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "Indica si la cita médica está o no activa"
+    }
+  }, {
+    sequelize,
+    tableName: 'citas_medicas',
+    schema: 'public',
+    timestamps: false,
+    indexes: [
+      {
+        name: "cita_medica_pk",
+        unique: true,
+        fields: [
+          { name: "id" },
+        ]
+      },
+    ]
+  });
+  return citas_medicas;
+  }
+}

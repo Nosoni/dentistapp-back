@@ -1,50 +1,54 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class cobranzas_detalle extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
       autoIncrement: true,
       autoIncrementIdentity: true,
-      type: DataTypes.SMALLINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Alias del usuario"
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
+    cobranza_id: {
       type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
+      allowNull: false,
+      comment: "Campo que hace referencia a la cobranza",
       references: {
-        model: 'funcionarios',
+        model: 'cobranzas',
         key: 'id'
       }
+    },
+    deuda_id: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Campo que hace referencia a una deuda",
+      references: {
+        model: 'deudas',
+        key: 'id'
+      }
+    },
+    monto: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Monto de pago"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el detalle de la cobranza está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'cobranzas_detalle',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "cobranza_detalle_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +56,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return cobranzas_detalle;
   }
 }

@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class presupuestos extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,22 +12,26 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    fecha: {
+      type: DataTypes.DATEONLY,
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Fecha del proceso de presupuestar"
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
+    paciente_id: {
       type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
+      allowNull: false,
+      comment: "Campo que hace referencia a un paciente",
       references: {
-        model: 'funcionarios',
+        model: 'pacientes',
+        key: 'id'
+      }
+    },
+    estado_presupuesto_id: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      comment: "Campo que hace referencia al estado del presupuesto",
+      references: {
+        model: 'estados_movimientos',
         key: 'id'
       }
     },
@@ -35,16 +39,16 @@ export default class usuarios extends Model {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el proceso de presupuestar está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'presupuestos',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "presupuesto_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +56,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return presupuestos;
   }
 }

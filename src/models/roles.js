@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class roles extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,30 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    nombre: {
+      type: DataTypes.STRING(50),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Nombre del rol"
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
-      type: DataTypes.SMALLINT,
+    descripcion: {
+      type: DataTypes.STRING(100),
       allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
-      references: {
-        model: 'funcionarios',
-        key: 'id'
-      }
+      comment: "Descripción del rol"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el rol está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'roles',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "rol_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +43,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return roles;
   }
 }

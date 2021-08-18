@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class tipos_movimientos_stock extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,36 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    nombre: {
+      type: DataTypes.STRING(15),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Nombre del tipo de movimiento de stock"
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "Texto secreto que valida al usuario"
-    },
-    funcionario_id: {
-      type: DataTypes.SMALLINT,
+    descripcion: {
+      type: DataTypes.STRING(50),
       allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
-      references: {
-        model: 'funcionarios',
-        key: 'id'
-      }
+      comment: "Descripción del tipo de movimiento de stock"
+    },
+    signo: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      defaultValue: 1,
+      comment: "Valor numérico. Indica cómo se comportará el movimiento."
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el tipo de movimiento está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'tipos_movimientos_stock',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "tipo_movimiento_stock_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +49,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return tipos_movimientos_stock;
   }
 }

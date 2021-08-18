@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class usuarios extends Model {
+export default class impuestos extends Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -12,39 +12,35 @@ export default class usuarios extends Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    usuario: {
-      type: DataTypes.STRING,
+    codigo: {
+      type: DataTypes.STRING(10),
       allowNull: false,
-      comment: "Alias del usuario"
+      comment: "Código del impuesto"
     },
-    password: {
-      type: DataTypes.STRING,
+    descripcion: {
+      type: DataTypes.STRING(50),
       allowNull: false,
-      comment: "Texto secreto que valida al usuario"
+      comment: "Descripción del impuesto"
     },
-    funcionario_id: {
-      type: DataTypes.SMALLINT,
-      allowNull: true,
-      comment: "Campo que hace referencia a un funcionario",
-      references: {
-        model: 'funcionarios',
-        key: 'id'
-      }
+    porcentaje: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      comment: "Porcentaje del impuesto"
     },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: "Indica si el usuario está o no activo"
+      comment: "Indica si el impuesto está o no activo"
     }
   }, {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'impuestos',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "usuario_pk",
+        name: "impuesto_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -52,6 +48,6 @@ export default class usuarios extends Model {
       },
     ]
   });
-  return usuarios;
+  return impuestos;
   }
 }
