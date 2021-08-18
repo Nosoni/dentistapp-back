@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const usuarios = require('../models').usuarios;
+const usuarios = require('../models_anterior').usuarios;
 
 module.exports = {
   // create(req, res) {

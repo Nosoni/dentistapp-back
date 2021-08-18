@@ -1,4 +1,4 @@
-const usuariosController = require('../controllers/usuarios');
+const usuariosController = require('../controllers_anterior/usuarios');
 
 module.exports = (app) => {
   app.get('/usuario', (req, res) => res.status(200).send({
