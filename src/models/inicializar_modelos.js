@@ -1,4 +1,4 @@
-var initModels = require("./init_models");
+const initModels = require("./init_models");
 const Sequelize = require('sequelize');
 let sequelize = new Sequelize('dentistapp', 'dentistapp', 'copernicus', {
     dialect: 'postgres',
