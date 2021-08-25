@@ -2,8 +2,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const routes = require('./src/routes_anterior/index')
-
-const permisosruta = require("./src/routes/permisos")
+const privadas = require("./src/routes/index")
+const publicas = require('./src/routes/publicas')
 
 const app = express()
 
@@ -16,10 +16,9 @@ app.use(express.json())
 app.use(morgan("dev"))//TODO, DELETED
 
 //routes
-//app.use(routes)
-//require('./src/routes_anterior')(app);
-require('./src/routes/usuario')(app);
-app.use(permisosruta)
+app.use(publicas)
+app.use(privadas)
+//require('./src/routes/usuario')(app);
 
 app.get('/', async (req, res) => {
   res.send('Back corriendo')

@@ -12,7 +12,6 @@ module.exports = {
   //     .catch(error => res.status(400).send(error))
   // },
   list(_, res) {
-    console.log("hola")
     return usuarios.findAll({})
       .then(usuario => res.status(200).send(usuario))
       .catch(error => res.status(400).send(error))
