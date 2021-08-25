@@ -1,6 +1,7 @@
 const models = require("../models/inicializar_modelos").usuarios;
 const { Op } = require("sequelize")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 module.exports = {
   async crear(req, res) {
@@ -23,14 +24,6 @@ module.exports = {
 
     return res.status(200).json(userCreate)
   },
-  async listar(_, res) {
-    try {
-      const list = await models.findAll({});
-      return res.status(200).json(list)
-    } catch (error) {
-      return res.status(400).send("error")
-    }
-  },
   async filtrar(req, res) {
     try {
       const { usuario } = req.params;
@@ -43,6 +36,43 @@ module.exports = {
       })
 
       return res.status(200).json(usuariosFiltrados)
+    } catch (error) {
+      return res.status(400).send("error")
+    }
+  },
+  async listar(_, res) {
+    try {
+      const list = await models.findAll({});
+      return res.status(200).json(list)
+    } catch (error) {
+      return res.status(400).send("error")
+    }
+  },
+  async login(req, res) {
+    try {
+      const { usuario, password } = req.body;
+      const usuarioFiltrado = await models.findAll({
+        where: {
+          usuario: {
+            [Op.eq]: usuario,
+          }
+        }
+      })
+
+      if (usuarioFiltrado.length == 0) {
+        return res.status(409).send("Usuario ingresado inválido.")
+      }
+
+      let mach = await bcrypt.compareSync(password, usuarioFiltrado[0].password);
+      if (!mach) {
+        return res.status(409).send("Contraseña ingresada inválida.")
+      }
+
+      // const token = jwt.sign(usuarioFiltrado[0].dataValues, llave, {
+      //   expiresIn: 1440
+      // });
+
+      return res.status(200).json("token")
     } catch (error) {
       return res.status(400).send("error")
     }

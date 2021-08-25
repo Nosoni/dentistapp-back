@@ -9,6 +9,7 @@ const app = express()
 
 //settings
 app.set("port", 3030)
+app.set("llaveSecreta", "pepito");
 
 //middlewares
 app.use(express.json())
