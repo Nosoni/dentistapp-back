@@ -11,6 +11,7 @@ module.exports = {
         where: {
           usuario: {
             [Op.eq]: usuario,
+            //todo and activo
           }
         }
       })
@@ -30,7 +31,12 @@ module.exports = {
         expiresIn: "1m"
       });
 
-      return res.status(200).json(token)
+      let retornarUsuario = {
+        usuario: { id: usuarioFiltrado[0].id, usuario },
+        token
+      }
+
+      return res.status(200).json(retornarUsuario)
     } catch (error) {
       return res.status(400).send("error")
     }
