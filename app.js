@@ -1,15 +1,18 @@
 //imports
 const express = require('express')
 const morgan = require('morgan')
+const config = require('./src/configuraciones/index')
+const definiciones = require('./src/constantes/index')
 const privadas = require("./src/routes/index")
 const publicas = require('./src/routes/publicas')
 const cors = require('cors')
 
 const app = express()
+console.log(config.env);
 
 //settings
-app.set("port", 3030)
-app.set("llaveSecreta", "9a3da82c-c1a8-4bef-80f6-573709e040fb");
+app.set(definiciones.puerto, config.port)
+app.set(definiciones.llave_secreta, config.llaveSecreta);
 
 //middlewares
 app.use(express.json())
@@ -20,10 +23,6 @@ app.use(morgan("dev"))//TODO, DELETED
 app.use(publicas)
 app.use(privadas)
 
-app.get('/', async (req, res) => {
-  res.send('Back corriendo')
-})
-
-app.listen(app.get("port"), () => {
-  console.log(`http://localhost:${app.get("port")}`)
+app.listen(app.get(definiciones.puerto), () => {
+  console.log(`http://localhost:${app.get(definiciones.puerto)}`)
 })

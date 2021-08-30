@@ -1,4 +1,5 @@
 const models = require("../models/inicializar_modelos").usuarios;
+const funcionarioModel = require("../models/inicializar_modelos").funcionarios;
 const { Op } = require("sequelize")
 const bcrypt = require("bcrypt")
 
@@ -27,6 +28,8 @@ module.exports = {
     try {
       const { usuario } = req.params;
       const usuariosFiltrados = await models.findAll({
+        attributes: { exclude: ['password'] },
+        include: [{ model: funcionarioModel, as: "funcionario" }],
         where: {
           usuario: {
             [Op.substring]: usuario,

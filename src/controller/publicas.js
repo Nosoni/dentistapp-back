@@ -1,21 +1,32 @@
-const models = require("../models/inicializar_modelos").usuarios;
+const usuarioModel = require("../models/inicializar_modelos").usuarios;
+const funcionarioModel = require("../models/inicializar_modelos").funcionarios;
+const usuariosRolesModel = require("../models/inicializar_modelos").usuarios_roles;
+const rolesModel = require("../models/inicializar_modelos").roles;
+const rolesPermisosModel = require("../models/inicializar_modelos").roles_permisos;
+const permisosModel = require("../models/inicializar_modelos").permisos;
 const bcrypt = require("bcrypt")
 const { Op } = require("sequelize")
 const jwt = require("jsonwebtoken")
+const definiciones = require('../constantes/index')
 
 module.exports = {
   async login(req, res) {
     try {
       const { usuario, password } = req.body;
-      const usuarioFiltrado = await models.findAll({
+
+      //#region Buscar usuario
+      const usuarioFiltrado = await usuarioModel.findAll({
+        include: [{ model: funcionarioModel, as: "funcionario" }],
         where: {
-          usuario: {
-            [Op.eq]: usuario,
-            //todo and activo
-          }
+          [Op.and]: {
+            usuario,
+            activo: true
+          },
         }
       })
+      //#endregion Buscar usuario
 
+      //#region Validar usuario
       if (usuarioFiltrado.length == 0) {
         return res.status(409).send("Usuario ingresado inválido.")
       }
@@ -24,19 +35,51 @@ module.exports = {
       if (!mach) {
         return res.status(409).send("Contraseña ingresada inválida.")
       }
+      //#endregion Validar usuario
 
-      const llaveSecreta = req.app.get("llaveSecreta");
+      //#region Generar JWT
+      const llaveSecreta = req.app.get(definiciones.llave_secreta);
 
       const token = jwt.sign(usuarioFiltrado[0].dataValues, llaveSecreta, {
-        expiresIn: "1m"
+        expiresIn: definiciones.expiresIn
       });
+      //#endregion Generar JWT
 
+      //#region Obtener roles y permisos
+      const rolesFiltrados = await usuariosRolesModel.findAll({
+        include: [{ model: rolesModel, as: "rol" }],
+        where: {
+          [Op.and]: {
+            usuario_id: usuarioFiltrado[0].id,
+            activo: true
+          },
+        },
+      })
+
+      const roles = rolesFiltrados.map((row) => row.rol)
+
+      const permisosFiltrados = await rolesPermisosModel.findAll({
+        include: [{ model: permisosModel, as: 'permiso' }],
+        where: {
+          [Op.and]: {
+            //TODO rol_id in
+            rol_id: roles[0].id,
+            activo: true
+          },
+        }
+      })
+
+      const permisos = permisosFiltrados.map((row) => row.permiso)
+      //#endregion Obtener roles y permisos
+
+      const usuarioRetornar = { ...usuarioFiltrado }
+      console.log(usuarioRetornar)
       let retornarUsuario = {
-        usuario: { id: usuarioFiltrado[0].id, usuario },
-        token
+        usuario: { id: usuarioFiltrado[0].id, usuario, funcionario: usuarioFiltrado[0].funcionario, roles, permisos },
+        token,
       }
-
       return res.status(200).json(retornarUsuario)
+
     } catch (error) {
       return res.status(400).send("error")
     }

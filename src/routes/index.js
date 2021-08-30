@@ -2,13 +2,13 @@ const express = require('express')
 const usuarios = require('./usuarios')
 const router = express.Router()
 const jwt = require("jsonwebtoken")
+const definiciones = require('../constantes')
 
 router.all("*", requiereAutenticacion)
 router.use("/usuarios", usuarios)
 
 async function requiereAutenticacion(req, res, next) {
   try {
-    return next()
     const bearerHeader = req.headers['authorization'];
 
     if (!bearerHeader) {
@@ -17,7 +17,7 @@ async function requiereAutenticacion(req, res, next) {
 
     const token = bearerHeader.split(' ')[1]
 
-    await jwt.verify(token, req.app.get("llaveSecreta"), (err, decoded) => {
+    await jwt.verify(token, req.app.get(definiciones.llave_secreta), (err, decoded) => {
       if (err) {
         return res.status(500).send("Token expirado.")
       }
