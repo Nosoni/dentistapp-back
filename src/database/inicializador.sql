@@ -1,3 +1,7 @@
+--falta tipo de documento
+--falta mas datos de funcionarios
+--falta actualizar usuarios
+
 INSERT INTO public.funcionarios (documento,tipo_documento_id,nombres,apellidos,fecha_ingreso,direccion,ciudad,telefono,email,activo) VALUES
 	 ('3828622',1,'francisco','recalde',NULL,NULL,NULL,NULL,NULL,true);
 

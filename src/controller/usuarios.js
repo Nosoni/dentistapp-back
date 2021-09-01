@@ -45,6 +45,7 @@ module.exports = {
   async listar(_, res) {
     try {
       const usuarioLista = await usuarioModel.findAll({
+        attributes: { exclude: ['password'] },
         include: [{ model: funcionarioModel, as: "funcionario" }]
       });
       return res.status(200).json(usuarioLista)

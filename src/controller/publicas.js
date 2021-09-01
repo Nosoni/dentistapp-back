@@ -72,8 +72,6 @@ module.exports = {
       const permisos = permisosFiltrados.map((row) => row.permiso)
       //#endregion Obtener roles y permisos
 
-      const usuarioRetornar = { ...usuarioFiltrado }
-      console.log(usuarioRetornar)
       let retornarUsuario = {
         usuario: { id: usuarioFiltrado[0].id, usuario, funcionario: usuarioFiltrado[0].funcionario, roles, permisos },
         token,
