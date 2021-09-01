@@ -1,4 +1,4 @@
-const models = require("../models/inicializar_modelos").usuarios;
+const usuarioModel = require("../models/inicializar_modelos").usuarios;
 const funcionarioModel = require("../models/inicializar_modelos").funcionarios;
 const { Op } = require("sequelize")
 const bcrypt = require("bcrypt")
@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt")
 module.exports = {
   async crear(req, res) {
     const { usuario, password } = req.body;
-    const userExists = await models.findAll({
+    const userExists = await usuarioModel.findAll({
       where: {
         usuario
       }
@@ -17,7 +17,7 @@ module.exports = {
     }
 
     const hash = await bcrypt.hash(password, 10);
-    const userCreate = await models.create({
+    const userCreate = await usuarioModel.create({
       usuario,
       password: hash
     })
@@ -27,7 +27,7 @@ module.exports = {
   async filtrar(req, res) {
     try {
       const { usuario } = req.params;
-      const usuariosFiltrados = await models.findAll({
+      const usuariosFiltrados = await usuarioModel.findAll({
         attributes: { exclude: ['password'] },
         include: [{ model: funcionarioModel, as: "funcionario" }],
         where: {
@@ -44,8 +44,10 @@ module.exports = {
   },
   async listar(_, res) {
     try {
-      const list = await models.findAll({});
-      return res.status(200).json(list)
+      const usuarioLista = await usuarioModel.findAll({
+        include: [{ model: funcionarioModel, as: "funcionario" }]
+      });
+      return res.status(200).json(usuarioLista)
     } catch (error) {
       return res.status(400).send("error")
     }
