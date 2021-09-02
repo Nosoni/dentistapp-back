@@ -21,6 +21,9 @@ app.use(morgan("dev"))//TODO, DELETED
 
 //routes
 app.use(publicas)
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
 app.use(privadas)
 
 app.listen(app.get(definiciones.puerto), () => {
