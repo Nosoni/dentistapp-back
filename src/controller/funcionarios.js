@@ -16,7 +16,7 @@ module.exports = {
               nombres: funcionario,
               apellidos: funcionario
             },
-            activo: true
+            activo
           }
         }
       })
