@@ -21,6 +21,13 @@ const env = {
   }
 }
 
-console.log(process.env)
+if (process.env.PG_SSL === 'true') {
+  env.credenciales.config.dialectOptions = {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  };
+}
 
 module.exports = env
