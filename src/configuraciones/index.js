@@ -21,7 +21,7 @@ const env = {
   }
 }
 
-if (process.env.PSSL === 'true') {
+if (process.env.SSL === 'true') {
   env.credenciales.config.dialectOptions = {
     ssl: {
       require: true,
