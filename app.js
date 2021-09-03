@@ -6,12 +6,13 @@ const definiciones = require('./src/constantes/index')
 const privadas = require("./src/routes/index")
 const publicas = require('./src/routes/publicas')
 const cors = require('cors')
+require('dotenv').config()
 
 const app = express()
 console.log(config.env);
 
 //settings
-app.set(definiciones.puerto, config.port)
+app.set(definiciones.puerto, process.env.APP_PORT || config.port)
 app.set(definiciones.llave_secreta, config.llaveSecreta);
 
 //middlewares

@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const env = {
   env: process.env.ENV_RUN,
-  port: process.env.APP_PORT || 3030,
+  port: 3030,
   llaveSecreta: process.env.SECRET_KEY,
   credenciales: {
     database: process.env.DATABASE_NAME,
