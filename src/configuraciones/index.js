@@ -1,12 +1,3 @@
-const { envVarExist } = require('./helpers');
-
-envVarExist('PG_DB');
-envVarExist('PG_HOST');
-envVarExist('PG_PORT');
-envVarExist('PG_USER');
-envVarExist('PG_PASS');
-envVarExist('PG_SSL');
-
 const dev = {
   env: process.env.ENV,
   port: 3030,
