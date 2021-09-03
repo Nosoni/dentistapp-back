@@ -6,7 +6,6 @@ const definiciones = require('./src/constantes/index')
 const privadas = require("./src/routes/index")
 const publicas = require('./src/routes/publicas')
 const cors = require('cors')
-require('dotenv').config()
 
 const app = express()
 console.log(config.env);
@@ -27,6 +26,6 @@ app.get('/', (req, res) => {
 })
 app.use(privadas)
 
-app.listen(process.env.APP_PORT || app.get(definiciones.puerto), () => {
-  console.log(`puerto: ${process.env.APP_PORT}${app.get(definiciones.puerto)}`)
+app.listen(app.get(definiciones.puerto), () => {
+  console.log(`puerto: ${app.get(definiciones.puerto)}`)
 })
