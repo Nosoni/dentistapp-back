@@ -1,5 +1,14 @@
+const { envVarExist } = require('./helpers');
+
+envVarExist('PG_DB');
+envVarExist('PG_HOST');
+envVarExist('PG_PORT');
+envVarExist('PG_USER');
+envVarExist('PG_PASS');
+envVarExist('PG_SSL');
+
 const dev = {
-  env: 'development',
+  env: process.env.ENV,
   port: 3030,
   llaveSecreta: '9a3da82c-c1a8-4bef-80f6-573709e040fb',
   credenciales: {
@@ -18,24 +27,35 @@ const dev = {
 }
 
 const heroku = {
-  env: 'keroku',
+  env: process.env.ENV,
   port: 3030,
   llaveSecreta: '9a3da82c-c1a8-4bef-80f6-573709e040fb',
   credenciales: {
-    database: 'd5t8apadk95g7d',
-    user: 'vgvzoidktbnvah',
-    password: 'ec99a4efe23352891e2ac211ffcb13f62faaea82ab335b26933eedf681630cb1',
+    database: process.env.PG_DB,
+    port: process.env.PG_PORT,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASS,
     config: {
+      //host: process.env.PG_HOST,
       dialect: 'postgres',
-      logging: false,
-      define: {
-        freezeTableName: true,
-        timestamps: false
-      },
+      // logging: process.env.ENV === 'development',
+      // define: {
+      //   freezeTableName: true,
+      //   timestamps: false
+      // },
     }
   }
 }
 
 const now = heroku
+
+if (process.env.PG_SSL === 'true') {
+  now.credenciales.dialectOptions = {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  };
+}
 
 module.exports = now
