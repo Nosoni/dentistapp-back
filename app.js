@@ -12,7 +12,7 @@ const app = express()
 console.log(config.env);
 
 //settings
-app.set(definiciones.puerto, process.env.APP_PORT || config.port)
+app.set(definiciones.puerto, config.port)
 app.set(definiciones.llave_secreta, config.llaveSecreta);
 
 //middlewares
@@ -27,6 +27,6 @@ app.get('/', (req, res) => {
 })
 app.use(privadas)
 
-app.listen(app.get(definiciones.puerto), () => {
-  console.log(`http://localhost:${app.get(definiciones.puerto)}`)
+app.listen(process.env.APP_PORT || app.get(definiciones.puerto), () => {
+  console.log(`puerto: ${process.env.APP_PORT}${app.get(definiciones.puerto)}`)
 })
