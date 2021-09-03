@@ -16,11 +16,11 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.6.5",
     "sequelize-auto": "^0.8.4",
-    "sequelize-cli": "^6.2.0"
-  },
-  "devDependencies": {
+    "sequelize-cli": "^6.2.0",
     "cors": "^2.8.5",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.12"
+  },
+  "devDependencies": {
   }
 }
