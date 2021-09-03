@@ -1,12 +1,16 @@
-const dev = {
-  env: 'development',
-  port: 3030,
-  llaveSecreta: '9a3da82c-c1a8-4bef-80f6-573709e040fb',
+require('dotenv').config()
+
+const env = {
+  env: process.env.ENV_RUN,
+  port: process.env.PORT || process.env.APP_PORT,
+  llaveSecreta: process.env.SECRET_KEY,
   credenciales: {
-    database: 'dentistapp',
-    user: 'dentistapp',
-    password: 'copernicus',
+    database: process.env.DATABASE_NAME,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
     config: {
+      host: process.env.DATABASE_HOST,
+      port: process.env.DATABASE_PORT,
       dialect: 'postgres',
       logging: false,
       define: {
@@ -17,25 +21,15 @@ const dev = {
   }
 }
 
-const heroku = {
-  env: 'keroku',
-  port: 3030,
-  llaveSecreta: '9a3da82c-c1a8-4bef-80f6-573709e040fb',
-  credenciales: {
-    database: 'd5t8apadk95g7d',
-    user: 'vgvzoidktbnvah',
-    password: 'ec99a4efe23352891e2ac211ffcb13f62faaea82ab335b26933eedf681630cb1',
-    config: {
-      dialect: 'postgres',
-      logging: false,
-      define: {
-        freezeTableName: true,
-        timestamps: false
-      },
-    }
-  }
+if (process.env.SSL === 'true') {
+  env.credenciales.config.dialectOptions = {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  };
 }
 
-const now = heroku
+console.log(env)
 
-module.exports = now
+module.exports = env

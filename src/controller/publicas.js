@@ -46,7 +46,7 @@ module.exports = {
       //#endregion Generar JWT
 
       //#region Obtener roles y permisos
-      const rolesFiltrados = await usuariosRolesModel.findAll({
+      const roles = await usuariosRolesModel.findAll({
         include: [{ model: rolesModel, as: "rol" }],
         where: {
           [Op.and]: {
@@ -54,22 +54,20 @@ module.exports = {
             activo: true
           },
         },
-      })
+      }).then(roles => roles.map(row => row.rol))
 
-      const roles = rolesFiltrados.map((row) => row.rol)
-
-      const permisosFiltrados = await rolesPermisosModel.findAll({
-        include: [{ model: permisosModel, as: 'permiso' }],
-        where: {
-          [Op.and]: {
-            //TODO rol_id in
-            rol_id: roles[0].id,
-            activo: true
-          },
-        }
-      })
-
-      const permisos = permisosFiltrados.map((row) => row.permiso)
+      const permisos = roles.length > 0 ?
+        await rolesPermisosModel.findAll({
+          include: [{ model: permisosModel, as: 'permiso' }],
+          where: {
+            [Op.and]: {
+              //TODO rol_id in
+              rol_id: roles[0].id,
+              activo: true
+            },
+          }
+        }).then(permisos => permisos.map(row => row.permiso)) :
+        [];
       //#endregion Obtener roles y permisos
 
       let retornarUsuario = {
@@ -79,7 +77,8 @@ module.exports = {
       return res.status(200).json(retornarUsuario)
 
     } catch (error) {
-      return res.status(400).send("error")
+      console.log(error)
+      return res.status(400).send(error.message)
     }
   },
 }
