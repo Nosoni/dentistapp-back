@@ -30,4 +30,6 @@ if (process.env.PG_SSL === 'true') {
   };
 }
 
+console.log(env)
+
 module.exports = env
