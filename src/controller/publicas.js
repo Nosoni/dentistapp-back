@@ -39,10 +39,12 @@ module.exports = {
 
       //#region Generar JWT
       const llaveSecreta = req.app.get(definiciones.llave_secreta);
+      console.log("llave",llaveSecreta)
 
       const token = jwt.sign(usuarioFiltrado[0].dataValues, llaveSecreta, {
         expiresIn: definiciones.expiresIn
       });
+      console.log("token",token)
       //#endregion Generar JWT
 
       //#region Obtener roles y permisos
