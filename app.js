@@ -26,6 +26,6 @@ app.get('/', (req, res) => {
 })
 app.use(privadas)
 
-app.listen(app.get(definiciones.puerto) || 3030, () => {
+app.listen(app.get(definiciones.puerto), () => {
   console.log(`http://localhost:${app.get(definiciones.puerto)}`)
 })
