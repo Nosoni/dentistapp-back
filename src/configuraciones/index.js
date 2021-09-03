@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const env = {
   env: process.env.ENV_RUN,
-  port: process.env.PORT || 3030,
+  port: process.env.PORT || process.env.APP_PORT,
   llaveSecreta: process.env.SECRET_KEY,
   credenciales: {
     database: process.env.DATABASE_NAME,
@@ -21,7 +21,7 @@ const env = {
   }
 }
 
-if (process.env.PG_SSL === 'true') {
+if (process.env.PSSL === 'true') {
   env.credenciales.config.dialectOptions = {
     ssl: {
       require: true,
