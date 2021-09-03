@@ -21,4 +21,6 @@ const env = {
   }
 }
 
+console.log(process.env)
+
 module.exports = env
