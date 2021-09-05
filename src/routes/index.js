@@ -21,7 +21,7 @@ async function requiereAutenticacion(req, res, next) {
 
     await jwt.verify(token, req.app.get(definiciones.llave_secreta), (err, decoded) => {
       if (err) {
-        return res.status(500).send("Token expirado.")
+        return res.status(402).send("Token expirado.")
       }
       req.decoded = decoded
       return next()
