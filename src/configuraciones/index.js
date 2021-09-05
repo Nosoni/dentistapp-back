@@ -30,6 +30,5 @@ if (process.env.SSL === 'true') {
   };
 }
 
-console.log(env)
 
 module.exports = env

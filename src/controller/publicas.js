@@ -28,12 +28,12 @@ module.exports = {
 
       //#region Validar usuario
       if (usuarioFiltrado.length == 0) {
-        return res.status(409).send("Usuario ingresado inválido.")
+        return res.status(409).send({ mensaje: "Usuario ingresado inválido." })
       }
 
       let mach = await bcrypt.compareSync(password, usuarioFiltrado[0].password);
       if (!mach) {
-        return res.status(409).send("Contraseña ingresada inválida.")
+        return res.status(409).send({ mensaje: "Contraseña ingresada inválida." })
       }
       //#endregion Validar usuario
 
@@ -74,11 +74,9 @@ module.exports = {
         usuario: { id: usuarioFiltrado[0].id, usuario, funcionario: usuarioFiltrado[0].funcionario, roles, permisos },
         token,
       }
-      return res.status(200).json(retornarUsuario)
-
+      return res.status(200).json({ mensaje: "Ingreso exitoso.", datos: retornarUsuario })
     } catch (error) {
-      console.log(error)
-      return res.status(400).send(error.message)
+      return res.status(500).send({ mensaje: error.message })
     }
   },
 }
