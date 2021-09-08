@@ -14,6 +14,7 @@ module.exports = {
       if (password.length < definiciones.longitudMinimaPass) {
         return res.status(409).send({ mensaje: "Logitud de contraseña inválida." })
       }
+      //único findAll en donde no se filtra por activo, ya que el usuario es único en el sistema
       const userExists = await usuarioModel.findAll({
         where: {
           usuario
