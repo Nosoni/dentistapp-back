@@ -1,6 +1,7 @@
 const express = require('express')
 const usuarios = require('./usuarios')
 const funcionarios = require('./funcionarios')
+const tipos_documentos = require('./tipos_documentos')
 const router = express.Router()
 const jwt = require("jsonwebtoken")
 const definiciones = require('../constantes')
@@ -8,6 +9,7 @@ const definiciones = require('../constantes')
 router.all("*", requiereAutenticacion)
 router.use("/usuarios", usuarios)
 router.use("/funcionarios", funcionarios)
+router.use("/tipos_documentos", tipos_documentos)
 
 async function requiereAutenticacion(req, res, next) {
   try {
