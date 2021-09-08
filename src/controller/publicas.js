@@ -73,6 +73,7 @@ module.exports = {
       let retornarUsuario = {
         usuario: { id: usuarioFiltrado[0].id, usuario, funcionario: usuarioFiltrado[0].funcionario, roles, permisos },
         token,
+        authenticated: true
       }
       return res.status(200).json({ mensaje: "Ingreso exitoso.", datos: retornarUsuario })
     } catch (error) {
