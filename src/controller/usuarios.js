@@ -8,13 +8,17 @@ module.exports = {
   async crear(req, res) {
     try {
       const { usuario, funcionario_id, password, confirmar } = req.body;
+      if (!usuario) {
+        return res.status(409).send({ mensaje: "Introduzca el usuario." })
+      }
       if (password !== confirmar) {
         return res.status(409).send({ mensaje: "La validación de contraseña no es correcta." })
       }
       if (password.length < definiciones.longitudMinimaPass) {
         return res.status(409).send({ mensaje: "Logitud de contraseña inválida." })
       }
-      //único findAll en donde no se filtra por activo, ya que el usuario es único en el sistema
+      //único findAll en donde no se filtra por activo, 
+      //ya que el usuario es único en el sistema
       const userExists = await usuarioModel.findAll({
         where: {
           usuario
@@ -82,6 +86,9 @@ module.exports = {
   async eliminar(req, res) {
     const id = req.params.id
 
+    if (!id) {
+      return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
+    }
     const usuario_eliminar = await usuarioModel.findOne({
       attributes: { exclude: ['password'] },
       where: {
