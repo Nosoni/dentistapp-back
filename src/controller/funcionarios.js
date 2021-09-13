@@ -97,13 +97,22 @@ module.exports = {
         where: {
           [Op.and]: {
             [Op.or]: {
-              documento: filtro,
-              nombres: filtro,
-              apellidos: filtro
+              documento: {
+                [Op.substring]: filtro,
+              },
+              nombres: {
+                [Op.substring]: filtro,
+              },
+              apellidos: {
+                [Op.substring]: filtro,
+              },
             },
             activo: true
           }
-        }
+        },
+        order: [
+          ['documento', 'ASC'],
+        ],
       })
 
       return res.status(200).json({ datos: funcionariosFiltrados })
@@ -113,7 +122,12 @@ module.exports = {
   },
   async listar(_, res) {
     try {
-      const funcionarioLista = await funcionarioModel.findAll({}, { where: { activo: true } });
+      const funcionarioLista = await funcionarioModel.findAll({
+        where: { activo: true },
+        order: [
+          ['nombres', 'ASC'],
+        ],
+      });
       return res.status(200).json({ datos: funcionarioLista })
     } catch (error) {
       return res.status(400).send({ mensaje: error.message })

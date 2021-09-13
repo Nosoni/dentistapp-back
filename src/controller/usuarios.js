@@ -120,11 +120,11 @@ module.exports = {
               [Op.substring]: usuario,
             },
             activo: true
-          },
-          order: [
-            ['usuario', 'ASC'],
-          ],
-        }
+          }
+        },
+        order: [
+          ['usuario', 'ASC'],
+        ],
       })
 
       return res.status(200).json({ datos: usuariosFiltrados })
@@ -137,9 +137,7 @@ module.exports = {
       const usuarioLista = await usuarioModel.findAll({
         attributes: { exclude: ['password'] },
         include: [{ model: funcionarioModel, as: "funcionario" }],
-        where: {
-          activo: true
-        },
+        where: { activo: true },
         order: [
           ['usuario', 'ASC'],
         ],

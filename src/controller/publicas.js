@@ -15,23 +15,26 @@ module.exports = {
       const { usuario, password } = req.body;
 
       //#region Buscar usuario
-      const usuarioFiltrado = await usuarioModel.findAll({
+      const usuarioFiltrado = await usuarioModel.findOne({
         include: [{ model: funcionarioModel, as: "funcionario" }],
         where: {
           [Op.and]: {
             usuario,
-            activo: true
           },
         }
       })
       //#endregion Buscar usuario
 
       //#region Validar usuario
-      if (usuarioFiltrado.length == 0) {
+      if (!usuarioFiltrado) {
         return res.status(409).send({ mensaje: "Usuario ingresado inválido." })
       }
 
-      let mach = await bcrypt.compareSync(password, usuarioFiltrado[0].password);
+      if (!usuarioFiltrado.activo) {
+        return res.status(409).send({ mensaje: "Usuario inactivo." })
+      }
+
+      let mach = await bcrypt.compareSync(password, usuarioFiltrado.password);
       if (!mach) {
         return res.status(409).send({ mensaje: "Contraseña ingresada inválida." })
       }
@@ -40,7 +43,7 @@ module.exports = {
       //#region Generar JWT
       const llaveSecreta = req.app.get(definiciones.llave_secreta);
 
-      const token = jwt.sign(usuarioFiltrado[0].dataValues, llaveSecreta, {
+      const token = jwt.sign(usuarioFiltrado.dataValues, llaveSecreta, {
         expiresIn: definiciones.expiresIn
       });
       //#endregion Generar JWT
@@ -50,7 +53,7 @@ module.exports = {
         include: [{ model: rolesModel, as: "rol" }],
         where: {
           [Op.and]: {
-            usuario_id: usuarioFiltrado[0].id,
+            usuario_id: usuarioFiltrado.id,
             activo: true
           },
         },
@@ -71,7 +74,7 @@ module.exports = {
       //#endregion Obtener roles y permisos
 
       let retornarUsuario = {
-        usuario: { id: usuarioFiltrado[0].id, usuario, funcionario: usuarioFiltrado[0].funcionario, roles, permisos },
+        usuario: { id: usuarioFiltrado.id, usuario, funcionario: usuarioFiltrado.funcionario, roles, permisos },
         token,
         authenticated: true
       }
