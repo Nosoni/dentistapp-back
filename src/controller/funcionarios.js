@@ -81,7 +81,7 @@ module.exports = {
       }
     })
 
-    if (funcionario_eliminar.length == 0) {
+    if (!funcionario_eliminar) {
       return res.status(409).send({ mensaje: "No existe el funcionario a eliminar." })
     }
 
