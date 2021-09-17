@@ -9,16 +9,37 @@ let fs = require('fs');
 console.log('Inicializando jsreport globalmente...');
 jsreport.init();
 
+const contenido = `
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
+<style>
+    div {
+        background-color: #343a40;
+        height: 100%;
+    }
+    h1 {
+        text-align:center;
+        color: #fff;
+    }   
+</style>
+<div>
+    <h1>
+    Hello world {{name}}
+    </h1>
+</div>
+`;
+
 async function renderizar(req, res) {
     let nombreArchivo = "prueba" + '-' + Date.now() + '.pdf';
 
     console.log('Renderizando reporte: ' + nombreArchivo);
     console.log(process.cwd())
+    console.log(__dirname)
 
     try {
         await jsreport.render({
             template: {
-                content: '<h1>Hello world {{name}}</h1>',
+                content: contenido,
                 engine: 'handlebars',
                 recipe: 'chrome-pdf',
                 phantom: {

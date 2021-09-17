@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const administracion = require('./administracion')
+const administracion = require('../reportes/administracion')
 
 router.use("/administracion", administracion)
 
