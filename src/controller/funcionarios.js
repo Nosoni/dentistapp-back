@@ -1,4 +1,5 @@
 const funcionarioModel = require("../models/inicializar_modelos").funcionarios;
+let moment = require('moment');
 const { Op } = require("sequelize")
 
 module.exports = {
@@ -54,7 +55,7 @@ module.exports = {
       funcionario_editar.ciudad = ciudad
       funcionario_editar.direccion = direccion
       funcionario_editar.email = email
-      funcionario_editar.fecha_ingreso = fecha_ingreso
+      funcionario_editar.fecha_ingreso = moment.utc(fecha_ingreso)
       funcionario_editar.nombres = nombres
       funcionario_editar.telefono = telefono
       funcionario_editar.tipo_documento_id = tipo_documento_id
