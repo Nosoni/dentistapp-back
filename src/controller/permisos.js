@@ -1,9 +1,12 @@
-var models = require("../models/inicializar_modelos").permisos;
+var permisosModels = require("../models/inicializar_modelos").permisos;
 
 module.exports = {
-  list(_, res) {
-    return models.findAll({}, { where: { activo: true } })
-      .then(result => res.status(200).send(result))
-      .catch(() => res.status(400).send("error"));
-  }
+  async listar(_, res) {
+    try {
+      const permisos = await permisosModels.findAll({ where: { activo: true } });
+      return res.status(200).json({ datos: permisos })
+    } catch (error) {
+      return res.status(400).send({ mensaje: error.message })
+    }
+  },
 }

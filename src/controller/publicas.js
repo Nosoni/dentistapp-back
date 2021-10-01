@@ -2,12 +2,11 @@ const usuarioModel = require("../models/inicializar_modelos").usuarios;
 const funcionarioModel = require("../models/inicializar_modelos").funcionarios;
 const usuariosRolesModel = require("../models/inicializar_modelos").usuarios_roles;
 const rolesModel = require("../models/inicializar_modelos").roles;
-const rolesPermisosModel = require("../models/inicializar_modelos").roles_permisos;
-const permisosModel = require("../models/inicializar_modelos").permisos;
 const bcrypt = require("bcrypt")
 const { Op } = require("sequelize")
 const jwt = require("jsonwebtoken")
 const definiciones = require('../constantes/index')
+const filtrarRolesPermisos = require('./roles_permisos').filtrarRolesPermisos
 
 module.exports = {
   async login(req, res) {
@@ -57,19 +56,11 @@ module.exports = {
             activo: true
           },
         },
-      }).then(roles => roles.map(row => row.rol))
+      }).then(usuarios_roles => usuarios_roles.map(row => row.rol))
 
       const permisos = roles.length > 0 ?
-        await rolesPermisosModel.findAll({
-          include: [{ model: permisosModel, as: 'permiso' }],
-          where: {
-            [Op.and]: {
-              //TODO rol_id in
-              rol_id: roles[0].id,
-              activo: true
-            },
-          }
-        }).then(permisos => permisos.map(row => row.permiso)) :
+        await filtrarRolesPermisos(roles.map(rol => rol.id))
+          .then(roles_permisos => roles_permisos.map(row => row.permiso)) :
         [];
       //#endregion Obtener roles y permisos
 
