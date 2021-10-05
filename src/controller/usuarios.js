@@ -9,13 +9,13 @@ module.exports = {
     try {
       const { usuario, funcionario_id, password, confirmar } = req.body;
       if (!usuario) {
-        return res.status(409).send({ mensaje: "Introduzca el usuario." })
+        return res.status(500).send({ mensaje: "Introduzca el usuario." })
       }
       if (password !== confirmar) {
-        return res.status(409).send({ mensaje: "La validación de contraseña no es correcta." })
+        return res.status(500).send({ mensaje: "La validación de contraseña no es correcta." })
       }
       if (password.length < definiciones.longitudMinimaPass) {
-        return res.status(409).send({ mensaje: "Logitud de contraseña inválida." })
+        return res.status(500).send({ mensaje: "Logitud de contraseña inválida." })
       }
       //único findAll en donde no se filtra por activo, 
       //ya que el usuario es único en el sistema
@@ -26,7 +26,7 @@ module.exports = {
       })
 
       if (userExists.length > 0) {
-        return res.status(409).send({ mensaje: "Ya existe dicho usuario." })
+        return res.status(500).send({ mensaje: "Ya existe dicho usuario." })
       }
 
       const hash = await bcrypt.hash(password, 10);
@@ -55,7 +55,7 @@ module.exports = {
       })
 
       if (usuario_editar.length == 0) {
-        return res.status(409).send({ mensaje: "No existe el usuario a editar." })
+        return res.status(500).send({ mensaje: "No existe el usuario a editar." })
       }
 
       usuario_editar.usuario = usuario
@@ -63,10 +63,10 @@ module.exports = {
 
       if (password && confirmar) {
         if (password !== confirmar) {
-          return res.status(409).send({ mensaje: "La validación de contraseña no es correcta." })
+          return res.status(500).send({ mensaje: "La validación de contraseña no es correcta." })
         }
         if (password.length < definiciones.longitudMinimaPass) {
-          return res.status(409).send({ mensaje: "Logitud de contraseña inválida." })
+          return res.status(500).send({ mensaje: "Logitud de contraseña inválida." })
         }
 
         const hash = await bcrypt.hash(password, 10);
@@ -100,7 +100,7 @@ module.exports = {
     })
 
     if (usuario_eliminar.length == 0) {
-      return res.status(409).send({ mensaje: "No existe el usuario a eliminar." })
+      return res.status(500).send({ mensaje: "No existe el usuario a eliminar." })
     }
 
     usuario_eliminar.activo = false

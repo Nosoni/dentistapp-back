@@ -20,7 +20,7 @@ module.exports = {
       })
 
       if (rol_editar) {
-        return res.status(409).send({ mensaje: "Ya existe dicho rol." })
+        return res.status(500).send({ mensaje: "Ya existe dicho rol." })
       }
 
       const rol = await rolesModel.create({
@@ -46,7 +46,7 @@ module.exports = {
       })
 
       if (!rol_editar) {
-        return res.status(409).send({ mensaje: "No existe el rol a editar." })
+        return res.status(500).send({ mensaje: "No existe el rol a editar." })
       }
 
       rol_editar.nombre = nombre
@@ -76,7 +76,7 @@ module.exports = {
     })
 
     if (!rol_eliminar) {
-      return res.status(409).send({ mensaje: "No existe el rol a eliminar." })
+      return res.status(500).send({ mensaje: "No existe el rol a eliminar." })
     }
 
     rol_eliminar.activo = false
@@ -116,7 +116,7 @@ module.exports = {
       const roles = await rolesModel.findAll({ where: { activo: true } });
       return res.status(200).json({ datos: roles })
     } catch (error) {
-      return res.status(400).send({ mensaje: error.message })
+      return res.status(500).send({ mensaje: error.message })
     }
   },
 }

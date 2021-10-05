@@ -20,7 +20,7 @@ module.exports = {
       })
 
       if (exite.length > 0) {
-        return res.status(409).send({ mensaje: "Ya existe dicho funcionario." })
+        return res.status(500).send({ mensaje: "Ya existe dicho funcionario." })
       }
 
       const funcionario = await funcionarioModel.create({
@@ -48,7 +48,7 @@ module.exports = {
       })
 
       if (funcionario_editar.length == 0) {
-        return res.status(409).send({ mensaje: "No existe el funcionario a editar." })
+        return res.status(500).send({ mensaje: "No existe el funcionario a editar." })
       }
 
       funcionario_editar.apellidos = apellidos
@@ -83,7 +83,7 @@ module.exports = {
     })
 
     if (!funcionario_eliminar) {
-      return res.status(409).send({ mensaje: "No existe el funcionario a eliminar." })
+      return res.status(500).send({ mensaje: "No existe el funcionario a eliminar." })
     }
 
     funcionario_eliminar.activo = false
@@ -131,7 +131,7 @@ module.exports = {
       });
       return res.status(200).json({ datos: funcionarioLista })
     } catch (error) {
-      return res.status(400).send({ mensaje: error.message })
+      return res.status(500).send({ mensaje: error.message })
     }
   },
 }

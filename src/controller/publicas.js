@@ -26,16 +26,16 @@ module.exports = {
 
       //#region Validar usuario
       if (!usuarioFiltrado) {
-        return res.status(409).send({ mensaje: "Usuario ingresado inválido." })
+        return res.status(500).send({ mensaje: "Usuario ingresado inválido." })
       }
 
       if (!usuarioFiltrado.activo) {
-        return res.status(409).send({ mensaje: "Usuario inactivo." })
+        return res.status(500).send({ mensaje: "Usuario inactivo." })
       }
 
       let mach = await bcrypt.compareSync(password, usuarioFiltrado.password);
       if (!mach) {
-        return res.status(409).send({ mensaje: "Contraseña ingresada inválida." })
+        return res.status(500).send({ mensaje: "Contraseña ingresada inválida." })
       }
       //#endregion Validar usuario
 
