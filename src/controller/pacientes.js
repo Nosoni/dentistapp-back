@@ -1,4 +1,5 @@
 const pacienteModel = require("../models/inicializar_modelos").pacientes;
+const fichas_medicas = require("./fichas_medicas").get_ficha
 let moment = require('moment');
 const { Op } = require("sequelize")
 
@@ -10,7 +11,7 @@ module.exports = {
 
       //validar propiedades obligatorias
       if (!documento || !tipo_documento_id || !nombres || !apellidos) {
-        return res.status(500).json({ mensaje: "Verificar datos del paciente" })
+        return res.status(500).json({ mensaje: "Verificar datos del paciente." })
       }
 
       const exite = pacienteModel.findOne({
@@ -88,7 +89,7 @@ module.exports = {
   async filtrar(req, res) {
     try {
       const { filtro } = req.params;
-      const pacientes_filtrados = await pacienteModel.findAll({
+      let pacientes_filtrados = await pacienteModel.findAll({
         where: {
           [Op.and]: {
             [Op.or]: {
@@ -110,7 +111,12 @@ module.exports = {
         ],
       })
 
-      return res.status(200).json({ datos: pacientes_filtrados })
+      const retornar = await Promise.all(pacientes_filtrados.map(async paciente => {
+        let ficha_medica = await fichas_medicas(paciente.id)
+        return { ...paciente.dataValues, ficha_medica: ficha_medica.dataValues }
+      }))
+
+      return res.status(200).json({ datos: retornar })
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
     }
@@ -123,7 +129,17 @@ module.exports = {
           ['nombres', 'ASC'],
         ],
       });
-      return res.status(200).json({ datos: paciente_lista })
+
+      const retornar = await Promise.all(paciente_lista.map(async paciente => {
+        let ficha_medica = await fichas_medicas(paciente.id)
+        if (!ficha_medica) {
+          return paciente;
+        } else {
+          return { ...paciente.dataValues, ficha_medica: ficha_medica.dataValues }
+        }
+      }))
+
+      return res.status(200).json({ datos: retornar })
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
     }

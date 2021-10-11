@@ -10,7 +10,7 @@ module.exports = {
 
       //validar propiedades obligatorias
       if (!documento || !tipo_documento_id || !nombres || !apellidos) {
-        return res.status(500).json({ mensaje: "Verificar datos del funcionario" })
+        return res.status(500).json({ mensaje: "Verificar datos del funcionario." })
       }
 
       const exite = funcionarioModel.findOne({

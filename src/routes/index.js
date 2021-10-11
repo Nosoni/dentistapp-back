@@ -1,5 +1,6 @@
 const express = require('express')
 //#region routes
+const fichas_medicas = require('./fichas_medicas')
 const funcionarios = require('./funcionarios')
 const pacientes = require('./pacientes')
 const permisos = require('./permisos')
@@ -14,6 +15,7 @@ const jwt = require("jsonwebtoken")
 const definiciones = require('../constantes')
 
 router.all("*", requiereAutenticacion)
+router.use("/fichas_medicas", fichas_medicas)
 router.use("/funcionarios", funcionarios)
 router.use("/pacientes", pacientes)
 router.use("/permisos", permisos)
@@ -28,7 +30,7 @@ async function requiereAutenticacion(req, res, next) {
     const bearerHeader = req.headers['authorization'];
 
     if (!bearerHeader) {
-      return res.status(500).send({ mensaje: "Error de autenticación" })
+      return res.status(500).send({ mensaje: "Error de autenticación." })
     }
 
     const token = bearerHeader.split(' ')[1]

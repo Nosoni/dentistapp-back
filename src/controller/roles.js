@@ -8,7 +8,7 @@ module.exports = {
 
       //validar propiedades obligatorias
       if (!nombre) {
-        return res.status(500).json({ mensaje: "Verificar datos del rol" })
+        return res.status(500).json({ mensaje: "Verificar datos del rol." })
       }
 
       const rol_editar = await rolesModel.findOne({
