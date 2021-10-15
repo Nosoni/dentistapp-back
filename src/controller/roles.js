@@ -11,7 +11,7 @@ module.exports = {
         return res.status(500).json({ mensaje: "Verificar datos del rol." })
       }
 
-      const rol_editar = await rolesModel.findOne({
+      const rol_existe = await rolesModel.findOne({
         where: {
           [Op.and]: {
             nombre,
@@ -20,7 +20,7 @@ module.exports = {
         }
       })
 
-      if (rol_editar) {
+      if (rol_existe) {
         return res.status(500).send({ mensaje: "Ya existe dicho rol." })
       }
 
