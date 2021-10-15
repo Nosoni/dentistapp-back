@@ -510,7 +510,7 @@ CREATE TABLE public.fichas_medicas (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	paciente_id int2 NOT NULL, -- Campo que hace referencia a un paciente
 	otro_medico bool NOT NULL DEFAULT false, -- Indica si está siendo atendido por otro médico
-	otro_medico_obsevacion varchar(150) NULL, -- Observación en caso de ser atendido por otro médico
+	otro_medico_observacion varchar(150) NULL, -- Observación en caso de ser atendido por otro médico
 	psiquiatra bool NOT NULL DEFAULT false, -- Indica si es atendido por un psiquiatra
 	medicamento bool NOT NULL DEFAULT false, -- Indica si está consumiendo algún medicamento
 	medicamento_json json NULL, -- Listado de medicamentos

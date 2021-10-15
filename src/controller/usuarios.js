@@ -3,11 +3,12 @@ const funcionarioModel = require("../models/inicializar_modelos").funcionarios;
 const { Op } = require("sequelize")
 const bcrypt = require("bcrypt")
 const definiciones = require('../constantes/index')
+const actualizarUsuariosRoles = require('./usuarios_roles').actualizarUsuariosRoles
 
 module.exports = {
   async crear(req, res) {
     try {
-      const { usuario, funcionario_id, password, confirmar } = req.body;
+      const { usuario, funcionario_id, password, confirmar, roles } = req.body;
       if (!usuario) {
         return res.status(500).send({ mensaje: "Introduzca el usuario." })
       }
@@ -36,6 +37,8 @@ module.exports = {
         password: hash
       })
 
+      await actualizarUsuariosRoles(userCreate.dataValues.id, roles)
+
       return res.status(200).json({ mensaje: "Usuario creado con éxito.", datos: userCreate })
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
@@ -43,7 +46,7 @@ module.exports = {
   },
   async editar(req, res) {
     try {
-      const { id, usuario, funcionario_id, password, confirmar } = req.body
+      const { id, usuario, funcionario_id, password, confirmar, roles } = req.body
       const usuario_editar = await usuarioModel.findOne({
         attributes: { exclude: ['password'] },
         where: {
@@ -77,6 +80,8 @@ module.exports = {
 
       let retornar = { ...usuario_editar.dataValues }
       delete retornar.password
+
+      await actualizarUsuariosRoles(id, roles)
 
       return res.status(200).json({ mensaje: "Usuario editado con éxito.", datos: retornar })
     } catch (error) {
