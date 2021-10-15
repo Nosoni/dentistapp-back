@@ -15,7 +15,7 @@ module.exports = {
   },
   async crear(req, res) {
     try {
-      const { paciente_id } = req.body;
+      const { paciente_id, ficha_medica } = req.body;
 
       const ficha_existente = await fichasMedicasModel.findAll({
         where: {
@@ -30,11 +30,11 @@ module.exports = {
         return res.status(500).send({ mensaje: "El paciente ya cuenta con una ficha médica." })
       }
 
-      // const ficha_creada = await fichasMedicasModel.create({
-      //   paciente_id
-      // })
+      const ficha_creada = await fichasMedicasModel.create({
+        paciente_id, ...ficha_medica
+      })
 
-      return res.status(200).json({ mensaje: "Usuario creado con éxito.", datos: {} })
+      return res.status(200).json({ mensaje: "Ficha cread con éxito.", datos: ficha_creada })
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
     }
@@ -88,6 +88,25 @@ module.exports = {
     await ficha_eliminar.save()
 
     return res.status(200).json({ mensaje: "Ficha médica eliminada con éxito." })
+  },
+  async delete_ficha(paciente_id) {
+    try {
+      const ficha = await fichasMedicasModel.findOne({
+        where: {
+          [Op.and]: {
+            paciente_id,
+            activo: true
+          }
+        },
+      })
+
+      if (ficha) {
+        ficha.activo = false;
+        await ficha.save();
+      }
+    } catch (error) {
+      throw error;
+    }
   },
   async filtrar(req, res) {
     try {

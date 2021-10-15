@@ -1,7 +1,8 @@
 const pacienteModel = require("../models/inicializar_modelos").pacientes;
 const fichas_medicas = require("./fichas_medicas").get_ficha
-let moment = require('moment');
+const delete_fichas_medicas = require("./fichas_medicas").delete_ficha
 const { Op } = require("sequelize")
+const validarFecha = require("../helpers/index").validarFecha
 
 module.exports = {
   async crear(req, res) {
@@ -14,19 +15,20 @@ module.exports = {
         return res.status(500).json({ mensaje: "Verificar datos del paciente." })
       }
 
-      const exite = pacienteModel.findOne({
+      const exite = await pacienteModel.findOne({
         where: {
           documento
         }
       })
 
-      if (exite.length > 0) {
+      if (exite) {
         return res.status(500).send({ mensaje: "Ya existe un paciente con el mismo documento." })
       }
 
+      const fecha = validarFecha(fecha_nacimiento)
       const paciente = await pacienteModel.create({
         apellidos, ciudad, direccion, documento, email,
-        fecha_nacimiento, nombres, telefono, tipo_documento_id
+        fecha, nombres, telefono, tipo_documento_id
       })
 
       return res.status(200).json({ mensaje: "Paciente creado con éxito.", datos: paciente })
@@ -36,8 +38,8 @@ module.exports = {
   },
   async editar(req, res) {
     try {
-      const { id, apellidos, ciudad, direccion,
-        email, fecha_ingreso, nombres, telefono, tipo_documento_id } = req.body;
+      const { id, apellidos, ciudad, direccion, email,
+        fecha_nacimiento, nombres, telefono, tipo_documento_id } = req.body;
 
       const paciente_editar = await pacienteModel.findOne({
         where: {
@@ -53,7 +55,13 @@ module.exports = {
       }
 
       paciente_editar.apellidos = apellidos
-      paciente_editar.fecha_ingreso = moment.utc(fecha_ingreso)
+      paciente_editar.ciudad = ciudad
+      paciente_editar.direccion = direccion
+      paciente_editar.email = email
+      paciente_editar.fecha_nacimiento = validarFecha(fecha_nacimiento)
+      paciente_editar.nombres = nombres
+      paciente_editar.telefono = telefono
+      paciente_editar.tipo_documento_id = tipo_documento_id
 
       await paciente_editar.save()
 
@@ -63,28 +71,35 @@ module.exports = {
     }
   },
   async eliminar(req, res) {
-    const id = req.params.id
+    try {
+      const id = req.params.id
 
-    if (!id) {
-      return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
-    }
-    const paciente_eliminar = await pacienteModel.findOne({
-      where: {
-        [Op.and]: {
-          id: id,
-          activo: true
-        }
+      if (!id) {
+        return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
       }
-    })
+      
+      const paciente_eliminar = await pacienteModel.findOne({
+        where: {
+          [Op.and]: {
+            id: id,
+            activo: true
+          }
+        }
+      })
 
-    if (!paciente_eliminar) {
-      return res.status(500).send({ mensaje: "No existe el paciente a eliminar." })
+      if (!paciente_eliminar) {
+        return res.status(500).send({ mensaje: "No existe el paciente a eliminar." })
+      }
+
+      paciente_eliminar.activo = false
+      await paciente_eliminar.save()
+
+      await delete_fichas_medicas(id)
+
+      return res.status(200).json({ mensaje: "Paciente eliminado con éxito." })
+    } catch (error) {
+      return res.status(500).json({ mensaje: error.message })
     }
-
-    paciente_eliminar.activo = false
-    await paciente_eliminar.save()
-
-    return res.status(200).json({ mensaje: "Paciente eliminado con éxito." })
   },
   async filtrar(req, res) {
     try {

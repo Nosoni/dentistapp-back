@@ -13,13 +13,13 @@ module.exports = {
         return res.status(500).json({ mensaje: "Verificar datos del funcionario." })
       }
 
-      const exite = funcionarioModel.findOne({
+      const exite = await funcionarioModel.findOne({
         where: {
           documento
         }
       })
 
-      if (exite.length > 0) {
+      if (exite) {
         return res.status(500).send({ mensaje: "Ya existe dicho funcionario." })
       }
 

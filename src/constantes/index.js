@@ -1,7 +1,7 @@
 const definiciones = {
   llave_secreta: 'llaveSecreta',
   puerto: 'port',
-  expiresIn: '1h',
+  expiresIn: '10h',
   longitudMinimaPass: 5
 }
 
