@@ -15,6 +15,7 @@ module.exports = {
         where: {
           [Op.and]: {
             nombre,
+            activo: true
           }
         }
       })

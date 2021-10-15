@@ -17,9 +17,7 @@ module.exports = {
       const usuarioFiltrado = await usuarioModel.findOne({
         include: [{ model: funcionarioModel, as: "funcionario" }],
         where: {
-          [Op.and]: {
-            usuario,
-          },
+          usuario,
         }
       })
       //#endregion Buscar usuario
