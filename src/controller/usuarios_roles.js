@@ -37,21 +37,19 @@ module.exports = {
         }
       })
 
-      const roles_tiene = usuario_roles.map(rol => {
-        return rol.dataValues.rol_id
+      const roles_tiene = usuario_roles.map(row => {
+        return row.dataValues.rol_id
       })
 
       let eliminar = roles_tiene.filter(x => !nuevos_roles.includes(x));
-      eliminar.map(async rol_id => {
-        await usuariosRolesModel.update({
-          activo: false
-        }, {
-          where: {
-            usuario_id,
-            rol_id,
-            activo: true
-          }
-        })
+      await usuariosRolesModel.update({
+        activo: false
+      }, {
+        where: {
+          usuario_id,
+          rol_id: { [Op.in]: eliminar },
+          activo: true
+        }
       })
 
       let insertar = nuevos_roles.filter(x => !roles_tiene.includes(x));

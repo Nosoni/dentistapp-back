@@ -89,29 +89,35 @@ module.exports = {
     }
   },
   async eliminar(req, res) {
-    const id = req.params.id
+    try {
+      const id = req.params.id
 
-    if (!id) {
-      return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
-    }
-    const usuario_eliminar = await usuarioModel.findOne({
-      attributes: { exclude: ['password'] },
-      where: {
-        [Op.and]: {
-          id: id,
-          activo: true
-        }
+      if (!id) {
+        return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
       }
-    })
+      const usuario_eliminar = await usuarioModel.findOne({
+        attributes: { exclude: ['password'] },
+        where: {
+          [Op.and]: {
+            id: id,
+            activo: true
+          }
+        }
+      })
 
-    if (usuario_eliminar.length == 0) {
-      return res.status(500).send({ mensaje: "No existe el usuario a eliminar." })
+      if (usuario_eliminar.length == 0) {
+        return res.status(500).send({ mensaje: "No existe el usuario a eliminar." })
+      }
+
+      usuario_eliminar.activo = false
+      await usuario_eliminar.save()
+
+      await actualizarUsuariosRoles(id, [])
+
+      return res.status(200).json({ mensaje: "Usuario eliminado con éxito." })
+    } catch (error) {
+      return res.status(500).send({ mensaje: error.message })
     }
-
-    usuario_eliminar.activo = false
-    await usuario_eliminar.save()
-
-    return res.status(200).json({ mensaje: "Usuario eliminado con éxito." })
   },
   async filtrar(req, res) {
     try {

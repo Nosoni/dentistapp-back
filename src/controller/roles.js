@@ -1,10 +1,11 @@
 var rolesModel = require("../models/inicializar_modelos").roles;
 const { Op } = require("sequelize")
+const actualizarRolesPermisos = require('./roles_permisos').actualizarRolesPermisos
 
 module.exports = {
   async crear(req, res) {
     try {
-      const { nombre, descripcion } = req.body;
+      const { nombre, descripcion, permisos } = req.body;
 
       //validar propiedades obligatorias
       if (!nombre) {
@@ -28,6 +29,8 @@ module.exports = {
         nombre, descripcion
       })
 
+      await actualizarRolesPermisos(rol.dataValues.id, permisos)
+
       return res.status(200).json({ mensaje: "Rol creado con éxito.", datos: rol })
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
@@ -35,7 +38,7 @@ module.exports = {
   },
   async editar(req, res) {
     try {
-      const { id, nombre, descripcion } = req.body;
+      const { id, nombre, descripcion, permisos } = req.body;
 
       const rol_editar = await rolesModel.findOne({
         where: {
@@ -54,6 +57,7 @@ module.exports = {
       rol_editar.descripcion = descripcion
 
       await rol_editar.save()
+      await actualizarRolesPermisos(rol_editar.dataValues.id, permisos)
 
       return res.status(200).json({ mensaje: "Rol editado con éxito.", datos: rol_editar })
     } catch (error) {
@@ -61,29 +65,34 @@ module.exports = {
     }
   },
   async eliminar(req, res) {
-    const id = req.params.id
+    try {
+      const id = req.params.id
 
-    if (!id) {
-      return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
-    }
-
-    const rol_eliminar = await rolesModel.findOne({
-      where: {
-        [Op.and]: {
-          id: id,
-          activo: true
-        }
+      if (!id) {
+        return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
       }
-    })
 
-    if (!rol_eliminar) {
-      return res.status(500).send({ mensaje: "No existe el rol a eliminar." })
+      const rol_eliminar = await rolesModel.findOne({
+        where: {
+          [Op.and]: {
+            id: id,
+            activo: true
+          }
+        }
+      })
+
+      if (!rol_eliminar) {
+        return res.status(500).send({ mensaje: "No existe el rol a eliminar." })
+      }
+
+      rol_eliminar.activo = false
+      await rol_eliminar.save()
+      await actualizarRolesPermisos(id, [])
+
+      return res.status(200).json({ mensaje: "Rol eliminado con éxito." })
+    } catch (error) {
+      return res.status(500).send({ mensaje: error.message })
     }
-
-    rol_eliminar.activo = false
-    await rol_eliminar.save()
-
-    return res.status(200).json({ mensaje: "Rol eliminado con éxito." })
   },
   async filtrar(req, res) {
     try {

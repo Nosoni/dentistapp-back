@@ -35,5 +35,42 @@ module.exports = {
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
     }
+  },
+  async actualizarRolesPermisos(rol_id, nuevos_permisos) {
+    try {
+      const roles_permisos = await rolesPermisosModel.findAll({
+        attributes: ['permiso_id'],
+        where: {
+          [Op.and]: {
+            rol_id,
+            activo: true
+          },
+        }
+      })
+      const permisos_tiene = roles_permisos.map(row => {
+        return row.dataValues.permiso_id
+      })
+
+      let eliminar = permisos_tiene.filter(x => !nuevos_permisos.includes(x));
+      await rolesPermisosModel.update({
+        activo: false
+      }, {
+        where: {
+          rol_id,
+          permiso_id: { [Op.in]: eliminar },
+          activo: true
+        }
+      })
+
+      let insertar = nuevos_permisos.filter(x => !permisos_tiene.includes(x));
+      insertar.map(async permiso_id => {
+        await rolesPermisosModel.create({
+          rol_id,
+          permiso_id: permiso_id
+        })
+      })
+    } catch (error) {
+      throw error
+    }
   }
 }
