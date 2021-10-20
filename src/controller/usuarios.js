@@ -57,7 +57,7 @@ module.exports = {
         }
       })
 
-      if (usuario_editar.length == 0) {
+      if (!usuario_editar) {
         return res.status(500).send({ mensaje: "No existe el usuario a editar." })
       }
 
@@ -105,7 +105,7 @@ module.exports = {
         }
       })
 
-      if (usuario_eliminar.length == 0) {
+      if (!usuario_eliminar) {
         return res.status(500).send({ mensaje: "No existe el usuario a eliminar." })
       }
 

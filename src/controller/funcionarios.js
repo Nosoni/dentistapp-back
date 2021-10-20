@@ -47,7 +47,7 @@ module.exports = {
         }
       })
 
-      if (funcionario_editar.length == 0) {
+      if (!funcionario_editar) {
         return res.status(500).send({ mensaje: "No existe el funcionario a editar." })
       }
 

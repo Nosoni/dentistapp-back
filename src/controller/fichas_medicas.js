@@ -2,6 +2,25 @@ const fichasMedicasModel = require("../models/inicializar_modelos").fichas_medic
 const { Op } = require("sequelize")
 
 module.exports = {
+  async delete_ficha(paciente_id) {
+    try {
+      const ficha = await fichasMedicasModel.findOne({
+        where: {
+          [Op.and]: {
+            paciente_id,
+            activo: true
+          }
+        },
+      })
+
+      if (ficha) {
+        ficha.activo = false;
+        await ficha.save();
+      }
+    } catch (error) {
+      throw error;
+    }
+  },
   async get_ficha(paciente_id) {
     const ficha = await fichasMedicasModel.findOne({
       where: {
@@ -41,23 +60,21 @@ module.exports = {
   },
   async editar(req, res) {
     try {
-      const { id, } = req.body
+      const { paciente_id, ficha_medica } = req.body
       const ficha_editar = await fichasMedicasModel.findOne({
         where: {
           [Op.and]: {
-            id: id,
+            paciente_id,
             activo: true
           }
         }
       })
 
-      if (ficha_editar.length == 0) {
+      if (!ficha_editar) {
         return res.status(500).send({ mensaje: "No existe la ficha médica a editar." })
       }
 
-      ficha_editar.id = id //cambiar
-
-      //await ficha_editar.save()
+      await ficha_editar.update(ficha_medica)
 
       return res.status(200).json({ mensaje: "Ficha médica editada con éxito.", datos: ficha_editar })
     } catch (error) {
@@ -88,25 +105,6 @@ module.exports = {
     await ficha_eliminar.save()
 
     return res.status(200).json({ mensaje: "Ficha médica eliminada con éxito." })
-  },
-  async delete_ficha(paciente_id) {
-    try {
-      const ficha = await fichasMedicasModel.findOne({
-        where: {
-          [Op.and]: {
-            paciente_id,
-            activo: true
-          }
-        },
-      })
-
-      if (ficha) {
-        ficha.activo = false;
-        await ficha.save();
-      }
-    } catch (error) {
-      throw error;
-    }
   },
   async filtrar(req, res) {
     try {

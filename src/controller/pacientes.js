@@ -50,7 +50,7 @@ module.exports = {
         }
       })
 
-      if (paciente_editar.length == 0) {
+      if (!paciente_editar) {
         return res.status(500).send({ mensaje: "No existe el paciente a editar." })
       }
 
