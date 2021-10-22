@@ -47,7 +47,7 @@ module.exports = {
 
       //#region Obtener roles y permisos
       const roles = await usuariosRolesModel.findAll({
-        include: [{ model: rolesModel, as: "rol" }],
+        include: [{ model: rolesModel, as: "rol", where: { activo: true } }],
         where: {
           [Op.and]: {
             usuario_id: usuarioFiltrado.id,
