@@ -1,5 +1,6 @@
 const doctorModel = require("../models/inicializar_modelos").doctores;
 const funcionarioModel = require("../models/inicializar_modelos").funcionarios;
+const actualizarDoctoresEspecialidades = require('./doctores_especialidades').actualizarDoctoresEspecialidades
 const { Op } = require("sequelize")
 
 module.exports = {
@@ -26,8 +27,7 @@ module.exports = {
       }
 
       const doctor = await doctorModel.create({ funcionario_id, registro_profesional })
-
-      //TODO, crear especialidades
+      await actualizarDoctoresEspecialidades(doctor.dataValues.id, especialidades)
 
       return res.status(200).json({ mensaje: "Doctor creado con éxito.", datos: doctor })
     } catch (error) {
@@ -51,9 +51,24 @@ module.exports = {
         return res.status(500).send({ mensaje: "No existe el doctor a editar." })
       }
 
-      await doctor_editar.update({ funcionario_id, registro_profesional })
+      const exite = await doctorModel.findOne({
+        where: {
+          [Op.and]: {
+            funcionario_id,
+            activo: true,
+            id: {
+              [Op.ne]: id
+            }
+          }
+        }
+      })
 
-      //TODO, editar especialidades
+      if (exite) {
+        return res.status(500).send({ mensaje: "El funcionario ya está asociado a otro doctor." })
+      }
+
+      await doctor_editar.update({ funcionario_id, registro_profesional })
+      await actualizarDoctoresEspecialidades(doctor_editar.dataValues.id, especialidades)
 
       return res.status(200).json({ mensaje: "Doctor editado con éxito.", datos: doctor_editar })
     } catch (error) {
@@ -70,7 +85,7 @@ module.exports = {
     const doctor_eliminar = await doctorModel.findOne({
       where: {
         [Op.and]: {
-          id: id,
+          id,
           activo: true
         }
       }
@@ -81,8 +96,7 @@ module.exports = {
     }
 
     await doctor_eliminar.update({ activo: false })
-
-    //TODO eliminar especialidades
+    await actualizarDoctoresEspecialidades(id, [])
 
     return res.status(200).json({ mensaje: "Doctor eliminado con éxito." })
   },
@@ -94,25 +108,23 @@ module.exports = {
           model: funcionarioModel, as: "funcionario", where: {
             [Op.and]: {
               activo: true,
-              documento: {
-                [Op.substring]: filtro,
-              },
-              nombres: {
-                [Op.substring]: filtro,
-              },
-              apellidos: {
-                [Op.substring]: filtro,
-              },
+              [Op.or]: {
+                documento: {
+                  [Op.substring]: filtro,
+                },
+                nombres: {
+                  [Op.substring]: filtro,
+                },
+                apellidos: {
+                  [Op.substring]: filtro,
+                },
+              }
             }
           }
         },
         where: {
           activo: true
         },
-        order: [
-          ['documento', 'ASC'],
-        ],
-        attributes: { exclude: ['funcionario'] },
       })
 
       return res.status(200).json({ datos: doctoresFiltrados })
@@ -126,16 +138,7 @@ module.exports = {
         where: {
           activo: true
         },
-        include: [{
-          model: funcionarioModel,
-          as: "funcionario",
-          where: {
-            activo: true
-          },
-          order: [
-            ['funcionario.nombres', 'ASC'],
-          ],
-        }],
+        include: { model: funcionarioModel, as: "funcionario", where: { activo: true } },
       });
 
       return res.status(200).json({ datos: doctorLista })
