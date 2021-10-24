@@ -1,7 +1,7 @@
 const usuariosRolesModel = require("../models/inicializar_modelos").usuarios_roles;
 const rolesModel = require("../models/inicializar_modelos").roles;
 const usuariosModel = require("../models/inicializar_modelos").usuarios;
-const { Op, where } = require("sequelize")
+const { Op } = require("sequelize")
 
 async function usuariosConRoles(usuarios) {
   let respuesta = await usuariosRolesModel.findAll({

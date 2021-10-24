@@ -82,6 +82,8 @@ module.exports = {
 
     await doctor_eliminar.update({ activo: false })
 
+    //TODO eliminar especialidades
+
     return res.status(200).json({ mensaje: "Doctor eliminado con éxito." })
   },
   async filtrar(req, res) {
@@ -113,8 +115,6 @@ module.exports = {
         attributes: { exclude: ['funcionario'] },
       })
 
-      console.log(doctoresFiltrados)
-
       return res.status(200).json({ datos: doctoresFiltrados })
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
@@ -126,7 +126,7 @@ module.exports = {
         where: {
           activo: true
         },
-        include: {
+        include: [{
           model: funcionarioModel,
           as: "funcionario",
           where: {
@@ -135,8 +135,9 @@ module.exports = {
           order: [
             ['funcionario.nombres', 'ASC'],
           ],
-        },
+        }],
       });
+
       return res.status(200).json({ datos: doctorLista })
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
