@@ -1,8 +1,8 @@
-const controller = require("../controller/roles")
+const controller = require("../controller/tratamientos_servicios")
 const express = require('express')
 const router = express.Router()
 
-router.get(`/filtrar/:rol`, controller.filtrar)
+router.get(`/filtrar/:filtro`, controller.filtrar)
 router.get(`/listar`, controller.listar)
 router.post(`/crear`, controller.crear)
 router.put(`/editar`, controller.editar)
