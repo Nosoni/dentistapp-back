@@ -39,11 +39,24 @@ module.exports = {
   async editar(req, res) {
     try {
       const { id, nombre, descripcion, permisos } = req.body;
+      
+      const rol_existe = await rolesModel.findOne({
+        where: {
+          [Op.and]: {
+            nombre,
+            activo: true
+          }
+        }
+      })
+
+      if (rol_existe) {
+        return res.status(500).send({ mensaje: "Ya existe dicho rol." })
+      }
 
       const rol_editar = await rolesModel.findOne({
         where: {
           [Op.and]: {
-            id: id,
+            id,
             activo: true
           }
         }

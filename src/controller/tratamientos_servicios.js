@@ -37,6 +37,19 @@ module.exports = {
     try {
       const { id, descripcion, precio, tiempo } = req.body;
 
+      const trat_serv_existe = await tratamientosServiciosModel.findOne({
+        where: {
+          [Op.and]: {
+            nombre,
+            activo: true
+          }
+        }
+      })
+
+      if (trat_serv_existe) {
+        return res.status(500).send({ mensaje: "Ya existe dicho tratamiento o servicio." })
+      }
+
       const trat_serv_editar = await tratamientosServiciosModel.findOne({
         where: {
           [Op.and]: {
@@ -50,8 +63,7 @@ module.exports = {
         return res.status(500).send({ mensaje: "No existe el tratamiento o servicio a editar." })
       }
 
-
-      await trat_serv_editar.update({ descripcion, precio, tiempo })
+      await trat_serv_editar.update({ nombre, descripcion, precio, tiempo })
 
       return res.status(200).json({ mensaje: "Tratamiento o servicio editado con éxito.", datos: trat_serv_editar })
     } catch (error) {

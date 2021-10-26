@@ -35,6 +35,19 @@ module.exports = {
     try {
       const { id, nombre, descripcion, especialidad_padre_id } = req.body;
 
+      const exite = await especialidadModel.findOne({
+        where: {
+          [Op.and]: {
+            nombre,
+            activo: true
+          }
+        }
+      })
+
+      if (exite) {
+        return res.status(500).send({ mensaje: "Ya existe una especialidad con el mismo nombre." })
+      }
+
       const especialidad_editar = await especialidadModel.findOne({
         where: {
           [Op.and]: {

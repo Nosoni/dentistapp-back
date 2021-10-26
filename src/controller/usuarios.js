@@ -47,11 +47,22 @@ module.exports = {
   async editar(req, res) {
     try {
       const { id, usuario, funcionario_id, password, confirmar, roles } = req.body
+
+      const userExists = await usuarioModel.findAll({
+        where: {
+          usuario
+        }
+      })
+
+      if (userExists.length > 0) {
+        return res.status(500).send({ mensaje: "Ya existe dicho usuario." })
+      }
+      
       const usuario_editar = await usuarioModel.findOne({
         attributes: { exclude: ['password'] },
         where: {
           [Op.and]: {
-            id: id,
+            id,
             activo: true
           }
         }
