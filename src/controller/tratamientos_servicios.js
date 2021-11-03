@@ -35,11 +35,14 @@ module.exports = {
   },
   async editar(req, res) {
     try {
-      const { id, descripcion, precio, tiempo } = req.body;
+      const { id, nombre, descripcion, precio, tiempo } = req.body;
 
       const trat_serv_existe = await tratamientosServiciosModel.findOne({
         where: {
           [Op.and]: {
+            id: {
+              [Op.ne]: id
+            },
             nombre,
             activo: true
           }

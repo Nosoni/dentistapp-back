@@ -43,6 +43,9 @@ module.exports = {
       const rol_existe = await rolesModel.findOne({
         where: {
           [Op.and]: {
+            id: {
+              [Op.ne]: id
+            },
             nombre,
             activo: true
           }

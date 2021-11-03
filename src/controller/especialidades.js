@@ -38,6 +38,9 @@ module.exports = {
       const exite = await especialidadModel.findOne({
         where: {
           [Op.and]: {
+            id: {
+              [Op.ne]: id
+            },
             nombre,
             activo: true
           }
