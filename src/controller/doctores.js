@@ -41,7 +41,7 @@ module.exports = {
       const doctor_editar = await doctorModel.findOne({
         where: {
           [Op.and]: {
-            id: id,
+            id,
             activo: true
           }
         }

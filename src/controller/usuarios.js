@@ -50,14 +50,20 @@ module.exports = {
 
       const userExists = await usuarioModel.findAll({
         where: {
-          usuario
+          [Op.and]: {
+            usuario,
+            activo: true,
+            id: {
+              [Op.ne]: id
+            }
+          }
         }
       })
 
       if (userExists.length > 0) {
         return res.status(500).send({ mensaje: "Ya existe dicho usuario." })
       }
-      
+
       const usuario_editar = await usuarioModel.findOne({
         attributes: { exclude: ['password'] },
         where: {
