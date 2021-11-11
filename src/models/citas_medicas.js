@@ -51,6 +51,11 @@ class citas_medicas extends Sequelize.Model {
         key: 'id'
       }
     },
+    observacion: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      comment: "Campo de observación de la reserva"
+    },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

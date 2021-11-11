@@ -1,5 +1,6 @@
 var DataTypes = require("sequelize").DataTypes;
 var _citas_medicas = require("./citas_medicas");
+var _citas_medicas_view = require("./citas_medicas_view");
 var _cobranzas = require("./cobranzas");
 var _cobranzas_detalle = require("./cobranzas_detalle");
 var _condiciones_pago = require("./condiciones_pago");
@@ -36,6 +37,7 @@ var _usuarios_roles = require("./usuarios_roles");
 
 function initModels(sequelize) {
   var citas_medicas = _citas_medicas(sequelize, DataTypes);
+  var citas_medicas_view = _citas_medicas_view(sequelize, DataTypes);
   var cobranzas = _cobranzas(sequelize, DataTypes);
   var cobranzas_detalle = _cobranzas_detalle(sequelize, DataTypes);
   var condiciones_pago = _condiciones_pago(sequelize, DataTypes);
@@ -92,8 +94,8 @@ function initModels(sequelize) {
   estados_movimientos.hasMany(citas_medicas, { as: "citas_medicas", foreignKey: "estado_cita_id"});
   cobranzas.belongsTo(estados_movimientos, { as: "estado_cobranza", foreignKey: "estado_cobranza_id"});
   estados_movimientos.hasMany(cobranzas, { as: "cobranzas", foreignKey: "estado_cobranza_id"});
-  estados_movimientos.belongsTo(estados_movimientos, { as: "estado_anterior", foreignKey: "estado_anterior_id"});
-  estados_movimientos.hasMany(estados_movimientos, { as: "estados_movimientos", foreignKey: "estado_anterior_id"});
+  estados_movimientos.belongsTo(estados_movimientos, { as: "estado_siguiente", foreignKey: "estado_siguiente_id"});
+  estados_movimientos.hasMany(estados_movimientos, { as: "estados_movimientos", foreignKey: "estado_siguiente_id"});
   facturas.belongsTo(estados_movimientos, { as: "estado_factura", foreignKey: "estado_factura_id"});
   estados_movimientos.hasMany(facturas, { as: "facturas", foreignKey: "estado_factura_id"});
   pacientes_dientes.belongsTo(estados_movimientos, { as: "estado_diente", foreignKey: "estado_diente_id"});
@@ -171,6 +173,7 @@ function initModels(sequelize) {
 
   return {
     citas_medicas,
+    citas_medicas_view,
     cobranzas,
     cobranzas_detalle,
     condiciones_pago,

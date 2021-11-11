@@ -1,5 +1,6 @@
 const express = require('express')
 //#region routes
+const citas_medicas = require('./citas_medicas')
 const doctores_especialidades = require('./doctores_especialidades')
 const doctores = require('./doctores')
 const especialidades = require('./especialidades')
@@ -20,6 +21,7 @@ const jwt = require("jsonwebtoken")
 const definiciones = require('../constantes')
 
 router.all("*", requiereAutenticacion)
+router.use("/citas_medicas", citas_medicas)
 router.use("/doctores_especialidades", doctores_especialidades)
 router.use("/doctores", doctores)
 router.use("/especialidades", especialidades)

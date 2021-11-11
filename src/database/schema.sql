@@ -152,11 +152,11 @@ CREATE TABLE public.estados_movimientos (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	tabla_id varchar(20) NOT NULL, -- Nombre de la tabla
 	estado_actual varchar(10) NOT NULL, -- Estado actual del proceso
-	estado_anterior_id int2 NULL, -- Campo que hace referencia al estado anterior
+	estado_siguiente_id int2 NULL, -- Campo que hace referencia al siguiente estado
 	puede_avanzar bool NOT NULL DEFAULT true, -- Campo que indica si puede avanzar el proceso al siguiente estado
 	activo bool NOT NULL DEFAULT true, -- Indica si el estado del movimiento está o no activo
 	CONSTRAINT estado_movimiento_pk PRIMARY KEY (id),
-	CONSTRAINT estados_movimientos_fk_estado FOREIGN KEY (estado_anterior_id) REFERENCES estados_movimientos(id)
+	CONSTRAINT estados_movimientos_fk_estado FOREIGN KEY (estado_siguiente_id) REFERENCES estados_movimientos(id)
 );
 COMMENT ON TABLE public.estados_movimientos IS 'Representa a los estados de los diferentes procesos dentro del sistema';
 COMMENT ON COLUMN public.estados_movimientos.id IS 'Código identificador autogenerado';
@@ -400,6 +400,7 @@ CREATE TABLE public.citas_medicas (
 	fecha_fin timestamp(0) NOT NULL, -- Fecha fin de la cita médica
 	usuario_id int2 NOT NULL, -- Campo que hace referencia a un usuario
 	estado_cita_id int2 NOT NULL, -- Campo que hace referencia al estado de la cita médica
+	observacion varchar(50) NULL, -- Campo de observación de la reserva
 	activo bool NOT NULL DEFAULT true, -- Indica si la cita médica está o no activa
 	CONSTRAINT cita_medica_pk PRIMARY KEY (id),
 	CONSTRAINT citas_medicas_fk_estado FOREIGN KEY (estado_cita_id) REFERENCES estados_movimientos(id),
