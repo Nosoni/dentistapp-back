@@ -94,8 +94,8 @@ function initModels(sequelize) {
   estados_movimientos.hasMany(citas_medicas, { as: "citas_medicas", foreignKey: "estado_cita_id"});
   cobranzas.belongsTo(estados_movimientos, { as: "estado_cobranza", foreignKey: "estado_cobranza_id"});
   estados_movimientos.hasMany(cobranzas, { as: "cobranzas", foreignKey: "estado_cobranza_id"});
-  estados_movimientos.belongsTo(estados_movimientos, { as: "estado_siguiente", foreignKey: "estado_siguiente_id"});
-  estados_movimientos.hasMany(estados_movimientos, { as: "estados_movimientos", foreignKey: "estado_siguiente_id"});
+  estados_movimientos.belongsTo(estados_movimientos, { as: "estado_anterior", foreignKey: "estado_anterior_id"});
+  estados_movimientos.hasMany(estados_movimientos, { as: "estados_movimientos", foreignKey: "estado_anterior_id"});
   facturas.belongsTo(estados_movimientos, { as: "estado_factura", foreignKey: "estado_factura_id"});
   estados_movimientos.hasMany(facturas, { as: "facturas", foreignKey: "estado_factura_id"});
   pacientes_dientes.belongsTo(estados_movimientos, { as: "estado_diente", foreignKey: "estado_diente_id"});

@@ -24,10 +24,10 @@ class estados_movimientos extends Sequelize.Model {
       allowNull: false,
       comment: "Estado actual del proceso"
     },
-    estado_siguiente_id: {
+    estado_anterior_id: {
       type: DataTypes.SMALLINT,
       allowNull: true,
-      comment: "Campo que hace referencia al siguiente estado",
+      comment: "Campo que hace referencia al estado anterior",
       references: {
         model: 'estados_movimientos',
         key: 'id'

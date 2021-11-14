@@ -4,5 +4,4 @@ npx sequelize-auto -o "./src/models" -d dentistapp -h localhost -u dentistapp -p
 # TODO LIST
 modificar la columna código de la tabla insumos en la DOCUENTACIÓN
 modificar la columna otro_medico_observacion de la tabla ficha en la DOCUMENTACIÓN
-modificar la columna estado_anterior_id de la tabla citas_medicas en la DOCUMENTACIÓN
 add la columna observacion en la tabla citas_medicas en la DOCUMENTACIÓN
