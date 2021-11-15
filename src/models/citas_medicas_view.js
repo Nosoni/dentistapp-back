@@ -39,6 +39,10 @@ class citas_medicas_view extends Sequelize.Model {
       type: DataTypes.STRING(10),
       allowNull: true
     },
+    puede_avanzar: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
     observacion: {
       type: DataTypes.STRING(50),
       allowNull: true

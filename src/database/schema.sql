@@ -1,3 +1,4 @@
+--TABLES
 CREATE TABLE public.condiciones_pago (
 	id int2 NOT NULL, -- Código identificador autogenerado
 	codigo varchar(15) NOT NULL,
@@ -654,3 +655,21 @@ COMMENT ON COLUMN public.deudas_detalle.cobranza_detalle_id IS 'Campo que hace r
 COMMENT ON COLUMN public.deudas_detalle.debe IS 'Monto del debe';
 COMMENT ON COLUMN public.deudas_detalle.haber IS 'Monto del haber';
 COMMENT ON COLUMN public.deudas_detalle.activo IS 'Indica si el detalle de la deuda está o no activo';
+
+--VIEWS
+CREATE OR REPLACE VIEW public.citas_medicas_view
+AS SELECT cm.id AS cita_medica_id,
+    cm.paciente_id,
+    (p.nombres::text || ' '::text) || p.apellidos::text AS paciente,
+    cm.fecha_inicio,
+    cm.fecha_fin,
+    cm.usuario_id,
+    cm.estado_cita_id,
+    em.estado_actual,
+    em.puede_avanzar,
+    cm.observacion,
+    cm.activo
+   FROM citas_medicas cm
+     JOIN pacientes p ON cm.paciente_id = p.id
+     JOIN estados_movimientos em ON cm.estado_cita_id = em.id
+  WHERE cm.activo = true AND p.activo = true AND em.activo = true;

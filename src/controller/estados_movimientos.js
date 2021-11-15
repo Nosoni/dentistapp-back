@@ -16,12 +16,15 @@ module.exports = {
   async filtrar(req, res) {
     try {
       const { tabla_id, estado_anterior_id } = req.body;
+      if (!tabla_id || !estado_anterior_id) {
+        return res.status(500).send({ mensaje: 'Verificar solicitud. Dato requerido no válido.' })
+      }
       const estadoMovimmientoFiltrados = await estadoMovimientoModel.findAll({
         where: {
           [Op.and]: {
             activo: true,
             tabla_id,
-            estado_anterior_id
+            estado_anterior_id,
           }
         },
       })

@@ -12,6 +12,7 @@ const env = {
       host: process.env.DATABASE_HOST,
       port: process.env.DATABASE_PORT,
       dialect: 'postgres',
+      timezone: 'America/Asuncion',
       logging: false,
       define: {
         freezeTableName: true,
