@@ -27,10 +27,6 @@ class citas_medicas_view extends Sequelize.Model {
       type: DataTypes.DATE,
       allowNull: true
     },
-    usuario_id: {
-      type: DataTypes.SMALLINT,
-      allowNull: true
-    },
     estado_cita_id: {
       type: DataTypes.SMALLINT,
       allowNull: true

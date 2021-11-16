@@ -33,15 +33,6 @@ class citas_medicas extends Sequelize.Model {
       allowNull: false,
       comment: "Fecha fin de la cita médica"
     },
-    usuario_id: {
-      type: DataTypes.SMALLINT,
-      allowNull: false,
-      comment: "Campo que hace referencia a un usuario",
-      references: {
-        model: 'usuarios',
-        key: 'id'
-      }
-    },
     estado_cita_id: {
       type: DataTypes.SMALLINT,
       allowNull: false,

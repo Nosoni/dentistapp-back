@@ -1,7 +1,7 @@
 const citasMedicasModel = require("../models/inicializar_modelos").citas_medicas;
 const citasMedicasViewModel = require("../models/inicializar_modelos").citas_medicas_view;
 const getEstadoInicialTabla = require('./estados_movimientos').getEstadoInicialTabla
-const validarFecha = require('../helpers/index').validarFecha
+const moment = require('moment')
 const { Op } = require("sequelize")
 
 module.exports = {
@@ -35,14 +35,12 @@ module.exports = {
   },
   async editar(req, res) {
     try {
-      const { id, paciente_id, fecha_inicio, fecha_fin, usuario_id, estado_cita_id } = req.body;
+      const { id, paciente_id, fecha_inicio, usuario_id, estado_cita_id, estado_nuevo_id, observacion } = req.body;
+
+      const fecha_fin = moment(fecha_inicio).add(1, 'hour')
 
       //validar propiedades obligatorias
-      if (!paciente_id || !fecha_inicio
-        // || !fecha_fin
-        // || !usuario_id
-        // || !estado_cita_id
-      ) {
+      if (!paciente_id || !fecha_inicio) {
         return res.status(500).json({ mensaje: "Verificar datos de la cita médica." })
       }
 
@@ -59,7 +57,12 @@ module.exports = {
         return res.status(500).send({ mensaje: "No existe la cita médica a editar." })
       }
 
-      await cita_medica_editar.update({ paciente_id, fecha_inicio, fecha_fin, usuario_id, estado_cita_id })
+      let nuevos_valores = { paciente_id, fecha_inicio, fecha_fin, usuario_id, estado_cita_id, observacion }
+      if (estado_nuevo_id) {
+        editar.estado_cita_id = estado_nuevo_id
+      }
+
+      await cita_medica_editar.update(nuevos_valores, req.user_login_id)
 
       return res.status(200).json({ mensaje: "Cita médica editada con éxito.", datos: cita_medica_editar })
     } catch (error) {

@@ -53,6 +53,7 @@ async function requiereAutenticacion(req, res, next) {
       if (err) {
         return res.status(500).send({ mensaje: "Token expirado.", authenticated: false })
       }
+      req.user_login_id = jwt.decode(token).id;
       req.decoded = decoded
       return next()
     })

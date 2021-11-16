@@ -17,6 +17,7 @@ var _fichas_medicas = require("./fichas_medicas");
 var _funcionarios = require("./funcionarios");
 var _impuestos = require("./impuestos");
 var _insumos = require("./insumos");
+var _log_cambios = require("./log_cambios");
 var _pacientes = require("./pacientes");
 var _pacientes_dientes = require("./pacientes_dientes");
 var _pacientes_dientes_detalle = require("./pacientes_dientes_detalle");
@@ -54,6 +55,7 @@ function initModels(sequelize) {
   var funcionarios = _funcionarios(sequelize, DataTypes);
   var impuestos = _impuestos(sequelize, DataTypes);
   var insumos = _insumos(sequelize, DataTypes);
+  var log_cambios = _log_cambios(sequelize, DataTypes);
   var pacientes = _pacientes(sequelize, DataTypes);
   var pacientes_dientes = _pacientes_dientes(sequelize, DataTypes);
   var pacientes_dientes_detalle = _pacientes_dientes_detalle(sequelize, DataTypes);
@@ -190,6 +192,7 @@ function initModels(sequelize) {
     funcionarios,
     impuestos,
     insumos,
+    log_cambios,
     pacientes,
     pacientes_dientes,
     pacientes_dientes_detalle,

@@ -399,7 +399,6 @@ CREATE TABLE public.citas_medicas (
 	paciente_id int2 NOT NULL, -- Campo que hace referencia a un paciente
 	fecha_inicio timestamp(0) NOT NULL, -- Fecha de inicio de la cita médica
 	fecha_fin timestamp(0) NOT NULL, -- Fecha fin de la cita médica
-	usuario_id int2 NOT NULL, -- Campo que hace referencia a un usuario
 	estado_cita_id int2 NOT NULL, -- Campo que hace referencia al estado de la cita médica
 	observacion varchar(50) NULL, -- Campo de observación de la reserva
 	activo bool NOT NULL DEFAULT true, -- Indica si la cita médica está o no activa
@@ -656,6 +655,24 @@ COMMENT ON COLUMN public.deudas_detalle.debe IS 'Monto del debe';
 COMMENT ON COLUMN public.deudas_detalle.haber IS 'Monto del haber';
 COMMENT ON COLUMN public.deudas_detalle.activo IS 'Indica si el detalle de la deuda está o no activo';
 
+CREATE TABLE public.log_cambios (
+	id smallserial NOT NULL DEFAULT nextval('log_cambios_id_seq'::regclass),
+	anterior json NOT NULL, -- Valor anterior al cambio
+	posterior json NOT NULL, -- Valor posterior al cambio
+	tabla_id varchar NOT NULL, -- Nombre de la tabla que realiza el cambio
+	registro_id int2 NOT NULL, -- Id del registro que realiza el cambio
+	usuario_id int2 NOT NULL, -- Campo que representa al usuario que realizó el cambio
+	fecha timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora del cambio
+	CONSTRAINT log_cambios_pk PRIMARY KEY (id),
+	CONSTRAINT log_cambios_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+COMMENT ON COLUMN public.log_cambios.anterior IS 'Valor anterior al cambio';
+COMMENT ON COLUMN public.log_cambios.tabla_id IS 'Nombre de la tabla que realiza el cambio';
+COMMENT ON COLUMN public.log_cambios.registro_id IS 'Id del registro que realiza el cambio';
+COMMENT ON COLUMN public.log_cambios.usuario_id IS 'Campo que representa al usuario que realizó el cambio';
+COMMENT ON COLUMN public.log_cambios.fecha IS 'Fecha y hora del cambio';
+
+
 --VIEWS
 CREATE OR REPLACE VIEW public.citas_medicas_view
 AS SELECT cm.id AS cita_medica_id,
@@ -663,7 +680,6 @@ AS SELECT cm.id AS cita_medica_id,
     (p.nombres::text || ' '::text) || p.apellidos::text AS paciente,
     cm.fecha_inicio,
     cm.fecha_fin,
-    cm.usuario_id,
     cm.estado_cita_id,
     em.estado_actual,
     em.puede_avanzar,
