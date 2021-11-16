@@ -35,7 +35,7 @@ module.exports = {
   },
   async editar(req, res) {
     try {
-      const { id, paciente_id, fecha_inicio, usuario_id, estado_cita_id, estado_nuevo_id, observacion } = req.body;
+      const { id, paciente_id, fecha_inicio, estado_cita_id, estado_nuevo_id, observacion } = req.body;
 
       const fecha_fin = moment(fecha_inicio).add(1, 'hour')
 
@@ -57,12 +57,12 @@ module.exports = {
         return res.status(500).send({ mensaje: "No existe la cita médica a editar." })
       }
 
-      let nuevos_valores = { paciente_id, fecha_inicio, fecha_fin, usuario_id, estado_cita_id, observacion }
+      let nuevos_valores = { paciente_id, fecha_inicio, fecha_fin, estado_cita_id, observacion }
       if (estado_nuevo_id) {
         editar.estado_cita_id = estado_nuevo_id
       }
 
-      await cita_medica_editar.update(nuevos_valores, req.user_login_id)
+      await cita_medica_editar.update(nuevos_valores, { user_login_id: req.user_login_id })
 
       return res.status(200).json({ mensaje: "Cita médica editada con éxito.", datos: cita_medica_editar })
     } catch (error) {

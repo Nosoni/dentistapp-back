@@ -166,12 +166,12 @@ function initModels(sequelize) {
   tipos_movimientos_stock.hasMany(stock_actualizar, { as: "stock_actualizars", foreignKey: "tipo_movimiento_id"});
   pacientes_dientes_historial.belongsTo(tratamientos_servicios, { as: "tratamiento_servicio", foreignKey: "tratamiento_servicio_id"});
   tratamientos_servicios.hasMany(pacientes_dientes_historial, { as: "pacientes_dientes_historials", foreignKey: "tratamiento_servicio_id"});
-  citas_medicas.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
-  usuarios.hasMany(citas_medicas, { as: "citas_medicas", foreignKey: "usuario_id"});
   stock_insumos_movimientos.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
   usuarios.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "usuario_id"});
   usuarios_roles.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
   usuarios.hasMany(usuarios_roles, { as: "usuarios_roles", foreignKey: "usuario_id"});
+  log_cambios.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
+  usuarios.hasMany(log_cambios, { as: "log_cambios", foreignKey: "usuario_id"});
 
   return {
     citas_medicas,

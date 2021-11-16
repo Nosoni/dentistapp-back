@@ -656,7 +656,7 @@ COMMENT ON COLUMN public.deudas_detalle.haber IS 'Monto del haber';
 COMMENT ON COLUMN public.deudas_detalle.activo IS 'Indica si el detalle de la deuda está o no activo';
 
 CREATE TABLE public.log_cambios (
-	id smallserial NOT NULL DEFAULT nextval('log_cambios_id_seq'::regclass),
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	anterior json NOT NULL, -- Valor anterior al cambio
 	posterior json NOT NULL, -- Valor posterior al cambio
 	tabla_id varchar NOT NULL, -- Nombre de la tabla que realiza el cambio

@@ -54,6 +54,18 @@ class citas_medicas extends Sequelize.Model {
       comment: "Indica si la cita médica está o no activa"
     }
   }, {
+    hooks: {
+      afterUpdate: async (citas_medicas, options) => {
+        const logCambiosModel = citas_medicas.sequelize.models.log_cambios
+        await logCambiosModel.create({
+          anterior: citas_medicas._previousDataValues,
+          posterior: citas_medicas,
+          tabla_id: 'citas_medicas',
+          registro_id: citas_medicas.dataValues.id,
+          usuario_id: options.user_login_id
+        })
+      }
+    },
     sequelize,
     tableName: 'citas_medicas',
     schema: 'public',

@@ -8,7 +8,8 @@ class log_cambios extends Sequelize.Model {
   super.init({
     id: {
       autoIncrement: true,
-      type: DataTypes.SMALLINT,
+      autoIncrementIdentity: true,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
