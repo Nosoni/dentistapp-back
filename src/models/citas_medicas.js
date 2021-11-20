@@ -55,13 +55,23 @@ class citas_medicas extends Sequelize.Model {
     }
   }, {
     hooks: {
-      afterUpdate: async (citas_medicas, options) => {
-        const logCambiosModel = citas_medicas.sequelize.models.log_cambios
+      afterCreate: async (model, options) => {
+        const logCambiosModel = model.sequelize.models.log_cambios
         await logCambiosModel.create({
-          anterior: citas_medicas._previousDataValues,
-          posterior: citas_medicas,
+          anterior: "Registro nuevo.",
+          posterior: model,
           tabla_id: 'citas_medicas',
-          registro_id: citas_medicas.dataValues.id,
+          registro_id: model.dataValues.id,
+          usuario_id: options.user_login_id
+        })
+      },
+      afterUpdate: async (model, options) => {
+        const logCambiosModel = model.sequelize.models.log_cambios
+        await logCambiosModel.create({
+          anterior: model._previousDataValues,
+          posterior: model,
+          tabla_id: 'citas_medicas',
+          registro_id: model.dataValues.id,
           usuario_id: options.user_login_id
         })
       }

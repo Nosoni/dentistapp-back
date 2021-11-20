@@ -7,26 +7,29 @@ const { Op } = require("sequelize")
 module.exports = {
   async crear(req, res) {
     try {
-      const { paciente_id, fecha_inicio, fecha_fin, usuario_id
-        // , estado_cita_id 
-        , observacion
-      } = req.body;
+      const { paciente_id, fecha_inicio, observacion } = req.body;
 
       //validar propiedades obligatorias
-      if (!paciente_id || !fecha_inicio
-        // || !fecha_fin
-        // || !usuario_id
-        // || !estado_cita_id
-      ) {
+      if (!paciente_id || !fecha_inicio) {
         return res.status(500).json({ mensaje: "Verificar datos de la cita médica." })
       }
 
-      const estado_inicial = await getEstadoInicialTabla('citas_medicas')
-      if (!estado_inicial) {
-        return res.status(500).json({ mensaje: "Sin estado inicial." })
+      if (moment(fecha_inicio).format('DD/MM/YYYY') < moment().format('DD/MM/YYYY')) {
+        return res.status(500).json({ mensaje: "No es posible agendar cita para una fecha anterior al de hoy." })
       }
 
-      const cita_medica = await citasMedicasModel.create({ paciente_id, fecha_inicio, fecha_fin: fecha_inicio, usuario_id: 1, estado_cita_id: estado_inicial.id, observacion })
+      const fecha_fin = moment(fecha_inicio).add(1, 'hour')
+
+      const estado_inicial = await getEstadoInicialTabla('citas_medicas')
+      if (!estado_inicial) {
+        return res.status(500).json({ mensaje: "Verificar configuración del estado inicial." })
+      }
+
+      const cita_medica = await citasMedicasModel.create({
+        paciente_id, fecha_inicio, fecha_fin, estado_cita_id: estado_inicial.id, observacion
+      }, {
+        user_login_id: req.user_login_id
+      })
 
       return res.status(200).json({ mensaje: "Cita médica creada con éxito.", datos: cita_medica })
     } catch (error) {
@@ -37,12 +40,31 @@ module.exports = {
     try {
       const { id, paciente_id, fecha_inicio, estado_cita_id, estado_nuevo_id, observacion } = req.body;
 
-      const fecha_fin = moment(fecha_inicio).add(1, 'hour')
-
       //validar propiedades obligatorias
       if (!paciente_id || !fecha_inicio) {
         return res.status(500).json({ mensaje: "Verificar datos de la cita médica." })
       }
+
+      if (moment(fecha_inicio).format('DD/MM/YYYY') < moment().format('DD/MM/YYYY')) {
+        return res.status(500).json({ mensaje: "No es posible agendar cita para una fecha anterior al de hoy." })
+      }
+
+      const fecha_fin = moment(fecha_inicio).add(1, 'hour')
+
+      // en caso que se quiera comprobar que exista una cita para dicha hora
+      // const cita_medica_existe = await citasMedicasModel.findOne({
+      //   where: {
+      //     [Op.and]: {
+      //       fecha_inicio: { [Op.lte]: fecha_inicio },
+      //       fecha_fin: { [Op.gte]: fecha_inicio },
+      //       id: { [Op.ne]: id }
+      //     }
+      //   }
+      // })
+
+      // if (!cita_medica_existe) { 
+      //   return res.status(500).send({ mensaje: "No existe la cita médica a editar." })
+      // }
 
       const cita_medica_editar = await citasMedicasModel.findOne({
         where: {
@@ -59,7 +81,7 @@ module.exports = {
 
       let nuevos_valores = { paciente_id, fecha_inicio, fecha_fin, estado_cita_id, observacion }
       if (estado_nuevo_id) {
-        editar.estado_cita_id = estado_nuevo_id
+        nuevos_valores.estado_cita_id = estado_nuevo_id
       }
 
       await cita_medica_editar.update(nuevos_valores, { user_login_id: req.user_login_id })
@@ -109,10 +131,10 @@ module.exports = {
         opciones.estado_actual = estado_actual
       }
       if (fecha_inicio) {
-        opciones.fecha_inicio = { [Op.gte]: fecha_inicio }
+        opciones.fecha_inicio = { [Op.gte]: moment(fecha_inicio).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }) }
       }
       if (fecha_fin) {
-        opciones.fecha_fin = { [Op.gte]: fecha_fin }
+        opciones.fecha_fin = { [Op.lte]: moment(fecha_fin).set({ hour: 23, minute: 59, second: 59, millisecond: 59 }) }
       }
 
       const cita_medica_filtrar = await citasMedicasViewModel.findAll({
