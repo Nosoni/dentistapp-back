@@ -34,7 +34,7 @@ class pacientes_dientes extends Sequelize.Model {
     },
     estado_diente_id: {
       type: DataTypes.SMALLINT,
-      allowNull: false,
+      allowNull: true,
       comment: "Campo que hace referencia al estado del diente",
       references: {
         model: 'estados_movimientos',

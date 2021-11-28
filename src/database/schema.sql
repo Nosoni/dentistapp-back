@@ -227,7 +227,7 @@ CREATE TABLE public.pacientes_dientes (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	paciente_id int2 NOT NULL, -- Campo que hace referencia a un paciente
 	diente_id int2 NOT NULL, -- Campo que hace referencia a un diente
-	estado_diente_id int2 NOT NULL, -- Campo que hace referencia al estado del diente
+	estado_diente_id int2 NULL, -- Campo que hace referencia al estado del diente
 	activo bool NOT NULL DEFAULT true, -- Indica si el diente del paciente está o no activo
 	CONSTRAINT paciente_diente_pk PRIMARY KEY (id),
 	CONSTRAINT pacientes_dientes_fk_diente FOREIGN KEY (diente_id) REFERENCES dientes(id),

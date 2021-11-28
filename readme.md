@@ -8,3 +8,4 @@ add la columna observacion en la tabla citas_medicas en la DOCUMENTACIÓN
 modificar la columna usuario_id de citas_medicas en DOCUMENTACIÓN
 add log_cambios en DOCUMENTACIÓN
 modificar columna codigo de la tabla dientes en DOCUMENTACION
+modificar longitud estado_actual tabla estados_movimientos DOCUMENTACION

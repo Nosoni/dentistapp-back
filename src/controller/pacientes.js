@@ -1,6 +1,8 @@
 const pacienteModel = require("../models/inicializar_modelos").pacientes;
-const fichas_medicas = require("./fichas_medicas").get_ficha
-const delete_fichas_medicas = require("./fichas_medicas").delete_ficha
+const get_ficha_medicas = require("./fichas_medicas").get_ficha
+const delete_ficha_medicas = require("./fichas_medicas").delete_ficha
+const get_paciente_dientes = require("./pacientes_dientes").get_paciente_dientes
+const delete_paciente_dientes = require("./pacientes_dientes").delete_paciente_dientes
 const { Op } = require("sequelize")
 const validarFecha = require("../helpers/index").validarFecha
 
@@ -77,7 +79,7 @@ module.exports = {
       if (!id) {
         return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
       }
-      
+
       const paciente_eliminar = await pacienteModel.findOne({
         where: {
           [Op.and]: {
@@ -94,7 +96,8 @@ module.exports = {
       paciente_eliminar.activo = false
       await paciente_eliminar.save()
 
-      await delete_fichas_medicas(id)
+      await delete_ficha_medicas(id)
+      await delete_paciente_dientes(id)
 
       return res.status(200).json({ mensaje: "Paciente eliminado con éxito." })
     } catch (error) {
@@ -127,8 +130,13 @@ module.exports = {
       })
 
       const retornar = await Promise.all(pacientes_filtrados.map(async paciente => {
-        let ficha_medica = await fichas_medicas(paciente.id)
-        return { ...paciente.dataValues, ficha_medica: ficha_medica.dataValues }
+        let ficha_medica = await get_ficha_medicas(paciente.id)
+        let dientes = await get_paciente_dientes(paciente.id)
+        return {
+          ...paciente.dataValues,
+          ficha_medica: ficha_medica,
+          dientes: dientes
+        }
       }))
 
       return res.status(200).json({ datos: retornar })
@@ -146,11 +154,12 @@ module.exports = {
       });
 
       const retornar = await Promise.all(paciente_lista.map(async paciente => {
-        let ficha_medica = await fichas_medicas(paciente.id)
-        if (!ficha_medica) {
-          return paciente;
-        } else {
-          return { ...paciente.dataValues, ficha_medica: ficha_medica.dataValues }
+        let ficha_medica = await get_ficha_medicas(paciente.id)
+        let dientes = await get_paciente_dientes(paciente.id)
+        return {
+          ...paciente.dataValues,
+          ficha_medica: ficha_medica,
+          dientes: dientes
         }
       }))
 
