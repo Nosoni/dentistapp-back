@@ -80,47 +80,5 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
     }
-  },
-  async eliminar(req, res) {
-    const id = req.params.id
-
-    if (!id) {
-      return res.status(500).json({ mensaje: "No es posible procesar solicitud." })
-    }
-
-    const ficha_eliminar = await fichasMedicasModel.findOne({
-      where: {
-        [Op.and]: {
-          id: id,
-          activo: true
-        }
-      }
-    })
-
-    if (ficha_eliminar.length == 0) {
-      return res.status(500).send({ mensaje: "No existe la ficha médica a eliminar." })
-    }
-
-    ficha_eliminar.activo = false
-    await ficha_eliminar.save()
-
-    return res.status(200).json({ mensaje: "Ficha médica eliminada con éxito." })
-  },
-  async filtrar(req, res) {
-    try {
-      const { paciente_id } = req.params;
-      const fichas_filtradas = await fichasMedicasModel.findAll({
-        where: {
-          [Op.and]: {
-            paciente_id,
-            activo: true
-          }
-        },
-      })
-
-      return res.status(200).json({ datos: fichas_filtradas })
-    } catch (error) {
-      return res.status(500).send({ mensaje: error.message })
-    }
-  },
+  }
 }
