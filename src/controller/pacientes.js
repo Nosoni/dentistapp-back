@@ -1,8 +1,10 @@
 const pacienteModel = require("../models/inicializar_modelos").pacientes;
 const get_ficha_medicas = require("./fichas_medicas").get_ficha
 const delete_ficha_medicas = require("./fichas_medicas").delete_ficha
+const create_ficha_medicas = require("./fichas_medicas").create_ficha
 const get_paciente_dientes = require("./pacientes_dientes").get_paciente_dientes
 const delete_paciente_dientes = require("./pacientes_dientes").delete_paciente_dientes
+const create_paciente_dientes = require("./pacientes_dientes").create_paciente_dientes
 const { Op } = require("sequelize")
 const validarFecha = require("../helpers/index").validarFecha
 
@@ -32,6 +34,9 @@ module.exports = {
         apellidos, ciudad, direccion, documento, email,
         fecha, nombres, telefono, tipo_documento_id
       })
+
+      await create_ficha_medicas(paciente.id)
+      await create_paciente_dientes(paciente.id)
 
       return res.status(200).json({ mensaje: "Paciente creado con éxito.", datos: paciente })
     } catch (error) {

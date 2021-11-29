@@ -32,6 +32,9 @@ module.exports = {
     })
     return ficha
   },
+  async create_ficha(paciente_id) {
+    await fichasMedicasModel.create({ paciente_id })
+  },
   async crear(req, res) {
     try {
       const { paciente_id, ficha_medica } = req.body;

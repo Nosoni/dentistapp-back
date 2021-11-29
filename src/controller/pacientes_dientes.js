@@ -9,8 +9,8 @@ module.exports = {
     const paciente_diente = await pacienteDienteModel.findAll({
       include: [
         {
-          model: pacienteDienteDetalleModel, as: "pacientes_dientes_detalles", where: { activo: true },
-          include: { model: estadoMovimientoModel, as: "estado_detalle", where: { activo: true } }
+          model: pacienteDienteDetalleModel, as: "pacientes_dientes_detalles", where: { activo: true }, attributes: ['cara', 'estado_detalle_id'],
+          include: { model: estadoMovimientoModel, as: "estado_detalle", where: { activo: true }, attributes: ['estado_actual'] }
         },
         { model: dienteModel, as: "diente", where: { activo: true } }
       ],
@@ -34,6 +34,21 @@ module.exports = {
     } catch (error) {
       throw error;
     }
+  },
+  async create_paciente_dientes(paciente_id) {
+    const dientes = await dienteModel.findAll({ where: { activo: true } })
+    const estado_actual = await estadoMovimientoModel.findOne({
+      where: {
+        [Op.and]:
+          { tabla_id: 'pacientes_dientes_detalle', estado_actual: 'Normal' }
+      }
+    })
+    Promise.all(dientes.map(async diente => {
+      const paciente_diente = await pacienteDienteModel.create({ paciente_id, diente_id: diente.id })
+      for (let index = 0; index < diente.cantidad_caras; index++) {
+        await pacienteDienteDetalleModel.create({ paciente_diente_id: paciente_diente.id, estado_detalle_id: estado_actual.id, cara: index + 1 })
+      }
+    }))
   },
   async filtrar(req, res) {
     try {
