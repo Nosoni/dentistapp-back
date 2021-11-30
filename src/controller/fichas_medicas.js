@@ -35,6 +35,16 @@ module.exports = {
   async create_ficha(paciente_id) {
     await fichasMedicasModel.create({ paciente_id })
   },
+  async update_ficha(ficha_medica) {
+    const ficha_editar = await fichasMedicasModel.findOne({
+      where: {
+        [Op.and]: {
+          id: ficha_medica.id
+        }
+      }
+    })
+    await ficha_editar.update(ficha_medica)
+  },
   async crear(req, res) {
     try {
       const { paciente_id, ficha_medica } = req.body;

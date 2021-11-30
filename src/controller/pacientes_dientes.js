@@ -50,6 +50,34 @@ module.exports = {
       }
     }))
   },
+  async update_paciente_dientes(paciente_dientes) {
+    //paciente_dientes es la tabla pacientes_dientes
+    //dientes.pacientes_dientes_detalles es el detalle de paciente_dientes
+    Promise.all(paciente_dientes.map(async dientes => {
+      const { pacientes_dientes_detalles } = dientes
+      pacientes_dientes_detalles.map(async detalle => {
+        //obtener el detalle por cara
+        const det_original = await pacienteDienteDetalleModel.findOne({
+          where: {
+            [Op.and]: {
+              paciente_diente_id: dientes.id,
+              cara: detalle.cara,
+              activo: true
+            }
+          }
+        })
+        //verificar que estado del detalle del diente haya variado
+        if (det_original.estado_detalle_id !== detalle.estado_detalle_id) {
+          await pacienteDienteDetalleModel.create({
+            paciente_diente_id: det_original.paciente_diente_id,
+            estado_detalle_id: detalle.estado_detalle_id,
+            cara: detalle.cara
+          })
+          await det_original.update({ activo: false })
+        }
+      })
+    }))
+  },
   async filtrar(req, res) {
     try {
       const { paciente_id } = req.body

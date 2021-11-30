@@ -2,9 +2,11 @@ const pacienteModel = require("../models/inicializar_modelos").pacientes;
 const get_ficha_medicas = require("./fichas_medicas").get_ficha
 const delete_ficha_medicas = require("./fichas_medicas").delete_ficha
 const create_ficha_medicas = require("./fichas_medicas").create_ficha
+const update_ficha_medicas = require("./fichas_medicas").update_ficha
 const get_paciente_dientes = require("./pacientes_dientes").get_paciente_dientes
 const delete_paciente_dientes = require("./pacientes_dientes").delete_paciente_dientes
 const create_paciente_dientes = require("./pacientes_dientes").create_paciente_dientes
+const update_paciente_dientes = require("./pacientes_dientes").update_paciente_dientes
 const { Op } = require("sequelize")
 const validarFecha = require("../helpers/index").validarFecha
 
@@ -46,7 +48,8 @@ module.exports = {
   async editar(req, res) {
     try {
       const { id, apellidos, ciudad, direccion, email,
-        fecha_nacimiento, nombres, telefono, tipo_documento_id } = req.body;
+        fecha_nacimiento, nombres, telefono, tipo_documento_id,
+        ficha_medica, dientes } = req.body;
 
       const paciente_editar = await pacienteModel.findOne({
         where: {
@@ -56,6 +59,8 @@ module.exports = {
           }
         }
       })
+
+      //return res.status(200).send({ mensaje: "OK" })
 
       if (!paciente_editar) {
         return res.status(500).send({ mensaje: "No existe el paciente a editar." })
@@ -71,6 +76,8 @@ module.exports = {
       paciente_editar.tipo_documento_id = tipo_documento_id
 
       await paciente_editar.save()
+      await update_ficha_medicas(ficha_medica)
+      await update_paciente_dientes(dientes)
 
       return res.status(200).json({ mensaje: "Paciente editado con éxito.", datos: paciente_editar })
     } catch (error) {
