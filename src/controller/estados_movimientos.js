@@ -34,10 +34,10 @@ module.exports = {
       return res.status(500).send({ mensaje: error.message })
     }
   },
-  async listarTabla(req, res) {
+  async listarTablaGrouping(req, res) {
     try {
       const { tabla_id } = req.params;
-      const estadoMovimmientoFiltrados = await estadoMovimientoModel.findAll({
+      const estados_movimientos_listar = await estadoMovimientoModel.findAll({
         attributes: ['estado_actual'],
         where: {
           [Op.and]: {
@@ -48,7 +48,24 @@ module.exports = {
         group: 'estado_actual'
       })
 
-      return res.status(200).json({ datos: estadoMovimmientoFiltrados })
+      return res.status(200).json({ datos: estados_movimientos_listar })
+    } catch (error) {
+      return res.status(500).send({ mensaje: error.message })
+    }
+  },
+  async listarTabla(req, res) {
+    try {
+      const { tabla_id } = req.params;
+      const estados_movimientos_listar = await estadoMovimientoModel.findAll({
+        where: {
+          [Op.and]: {
+            activo: true,
+            tabla_id,
+          }
+        },
+      })
+
+      return res.status(200).json({ datos: estados_movimientos_listar })
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
     }

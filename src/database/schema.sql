@@ -16,7 +16,7 @@ COMMENT ON COLUMN public.condiciones_pago.activo IS 'Indica si la condición de 
 
 CREATE TABLE public.dientes (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	codigo varchar(5) NOT NULL, -- Código del diente
+	codigo int2 NOT NULL, -- Código del diente
 	temporal bool NOT NULL DEFAULT false, -- Determina si el diente es uno temporal
 	cantidad_caras int2 NOT NULL, -- Determina la cantidad de caras del diente
 	activo bool NOT NULL DEFAULT true, -- Indica si el diente está o no activo
@@ -151,7 +151,7 @@ COMMENT ON COLUMN public.especialidades.activo IS 'Indica si la especialidad est
 
 CREATE TABLE public.estados_movimientos (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	tabla_id varchar(20) NOT NULL, -- Nombre de la tabla
+	tabla_id varchar(50) NOT NULL, -- Nombre de la tabla
 	estado_actual varchar(10) NOT NULL, -- Estado actual del proceso
 	estado_anterior_id int2 NULL, -- Campo que hace referencia al estado anterior
 	puede_avanzar bool NOT NULL DEFAULT true, -- Campo que indica si puede avanzar el proceso al siguiente estado
@@ -404,16 +404,15 @@ CREATE TABLE public.citas_medicas (
 	activo bool NOT NULL DEFAULT true, -- Indica si la cita médica está o no activa
 	CONSTRAINT cita_medica_pk PRIMARY KEY (id),
 	CONSTRAINT citas_medicas_fk_estado FOREIGN KEY (estado_cita_id) REFERENCES estados_movimientos(id),
-	CONSTRAINT citas_medicas_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
-	CONSTRAINT citas_medicas_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+	CONSTRAINT citas_medicas_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
 );
 COMMENT ON TABLE public.citas_medicas IS 'Representa a las citas médicas del consultorio';
 COMMENT ON COLUMN public.citas_medicas.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.citas_medicas.paciente_id IS 'Campo que hace referencia a un paciente';
 COMMENT ON COLUMN public.citas_medicas.fecha_inicio IS 'Fecha de inicio de la cita médica';
 COMMENT ON COLUMN public.citas_medicas.fecha_fin IS 'Fecha fin de la cita médica';
-COMMENT ON COLUMN public.citas_medicas.usuario_id IS 'Campo que hace referencia a un usuario';
 COMMENT ON COLUMN public.citas_medicas.estado_cita_id IS 'Campo que hace referencia al estado de la cita médica';
+COMMENT ON COLUMN public.citas_medicas.observacion IS 'Campo de observación de la reserva';
 COMMENT ON COLUMN public.citas_medicas.activo IS 'Indica si la cita médica está o no activa';
 
 CREATE TABLE public.cobranzas (
@@ -542,7 +541,7 @@ COMMENT ON TABLE public.fichas_medicas IS 'Representa la ficha médica del pacie
 COMMENT ON COLUMN public.fichas_medicas.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.fichas_medicas.paciente_id IS 'Campo que hace referencia a un paciente';
 COMMENT ON COLUMN public.fichas_medicas.otro_medico IS 'Indica si está siendo atendido por otro médico';
-COMMENT ON COLUMN public.fichas_medicas.otro_medico_obsevacion IS 'Observación en caso de ser atendido por otro médico';
+COMMENT ON COLUMN public.fichas_medicas.otro_medico_observacion IS 'Observación en caso de ser atendido por otro médico';
 COMMENT ON COLUMN public.fichas_medicas.psiquiatra IS 'Indica si es atendido por un psiquiatra';
 COMMENT ON COLUMN public.fichas_medicas.medicamento IS 'Indica si está consumiendo algún medicamento';
 COMMENT ON COLUMN public.fichas_medicas.medicamento_json IS 'Listado de medicamentos';
@@ -566,6 +565,23 @@ COMMENT ON COLUMN public.fichas_medicas.trastornos_periodo IS 'Indica si tiene t
 COMMENT ON COLUMN public.fichas_medicas.otra_enfermedad_trastorno IS 'Indica si padece alguna otra enfermedad o trastornos no mencionados';
 COMMENT ON COLUMN public.fichas_medicas.otra_enfermedad_trastornos_observacion IS 'Observación en caso de padecer alguna enfermedad o trastornos no listados';
 COMMENT ON COLUMN public.fichas_medicas.activo IS 'Indica si la ficha médica está o no activa';
+
+CREATE TABLE public.log_cambios (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	anterior json NOT NULL, -- Valor anterior al cambio
+	posterior json NOT NULL,
+	tabla_id varchar NOT NULL, -- Nombre de la tabla que realiza el cambio
+	registro_id int2 NOT NULL, -- Id del registro que realiza el cambio
+	usuario_id int2 NOT NULL, -- Campo que representa al usuario que realizó el cambio
+	fecha timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora del cambio
+	CONSTRAINT log_cambios_pk PRIMARY KEY (id),
+	CONSTRAINT log_cambios_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+COMMENT ON COLUMN public.log_cambios.anterior IS 'Valor anterior al cambio';
+COMMENT ON COLUMN public.log_cambios.tabla_id IS 'Nombre de la tabla que realiza el cambio';
+COMMENT ON COLUMN public.log_cambios.registro_id IS 'Id del registro que realiza el cambio';
+COMMENT ON COLUMN public.log_cambios.usuario_id IS 'Campo que representa al usuario que realizó el cambio';
+COMMENT ON COLUMN public.log_cambios.fecha IS 'Fecha y hora del cambio';
 
 CREATE TABLE public.stock_insumos_movimientos (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
@@ -627,7 +643,7 @@ CREATE TABLE public.cobranzas_detalle (
 	CONSTRAINT cobranzas_detalle_fk FOREIGN KEY (deuda_id) REFERENCES deudas(id),
 	CONSTRAINT cobranzas_detalle_fk_cobranza FOREIGN KEY (cobranza_id) REFERENCES cobranzas(id)
 );
-COMMENT ON TABLE public.cobranzas_detalle IS 'Representa el detalle de la cobranza';
+COMMENT ON TABLE public.cobranzas_detalle IS 'Representa al detalle de la cobranza';
 COMMENT ON COLUMN public.cobranzas_detalle.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.cobranzas_detalle.cobranza_id IS 'Campo que hace referencia a la cobranza';
 COMMENT ON COLUMN public.cobranzas_detalle.deuda_id IS 'Campo que hace referencia a una deuda';
@@ -654,24 +670,6 @@ COMMENT ON COLUMN public.deudas_detalle.cobranza_detalle_id IS 'Campo que hace r
 COMMENT ON COLUMN public.deudas_detalle.debe IS 'Monto del debe';
 COMMENT ON COLUMN public.deudas_detalle.haber IS 'Monto del haber';
 COMMENT ON COLUMN public.deudas_detalle.activo IS 'Indica si el detalle de la deuda está o no activo';
-
-CREATE TABLE public.log_cambios (
-	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	anterior json NOT NULL, -- Valor anterior al cambio
-	posterior json NOT NULL, -- Valor posterior al cambio
-	tabla_id varchar NOT NULL, -- Nombre de la tabla que realiza el cambio
-	registro_id int2 NOT NULL, -- Id del registro que realiza el cambio
-	usuario_id int2 NOT NULL, -- Campo que representa al usuario que realizó el cambio
-	fecha timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora del cambio
-	CONSTRAINT log_cambios_pk PRIMARY KEY (id),
-	CONSTRAINT log_cambios_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-);
-COMMENT ON COLUMN public.log_cambios.anterior IS 'Valor anterior al cambio';
-COMMENT ON COLUMN public.log_cambios.tabla_id IS 'Nombre de la tabla que realiza el cambio';
-COMMENT ON COLUMN public.log_cambios.registro_id IS 'Id del registro que realiza el cambio';
-COMMENT ON COLUMN public.log_cambios.usuario_id IS 'Campo que representa al usuario que realizó el cambio';
-COMMENT ON COLUMN public.log_cambios.fecha IS 'Fecha y hora del cambio';
-
 
 --VIEWS
 CREATE OR REPLACE VIEW public.citas_medicas_view
