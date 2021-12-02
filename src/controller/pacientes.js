@@ -187,4 +187,17 @@ module.exports = {
       return res.status(500).send({ mensaje: error.message })
     }
   },
+  async listarPacientes(_, res) {
+    try {
+      const paciente_lista = await pacienteModel.findAll({
+        where: { activo: true },
+        order: [
+          ['nombres', 'ASC'],
+        ],
+      });
+      return res.status(200).json({ datos: paciente_lista })
+    } catch (error) {
+      return res.status(500).send({ mensaje: error.message })
+    }
+  }
 }
