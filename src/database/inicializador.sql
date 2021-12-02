@@ -20,7 +20,9 @@ INSERT INTO public.permisos (nombre,descripcion,activo) VALUES
 	 ('menu_ver_especialidad','Concede acceso al menú especialidad',true),
 	 ('menu_ver_tratamiento_servicio','Concede acceso al menú tratamiento y servicio',true),
 	 ('menu_ver_insumo','Concede acceso al menú insumo',true),
-	 ('menu_ver_cita_medica','Concede acceso al menú cita médica',true);
+	 ('menu_ver_cita_medica','Concede acceso al menú cita médica',true),
+	 ('menu_ver_facturacion','Concede acceso al menú facturación',true),
+	 ('menu_ver_presupuesto','Concede acceso al menú presupuesto',true);
    
 INSERT INTO public.roles_permisos (rol_id,permiso_id,activo) VALUES
 	 (1,1,true),
@@ -31,7 +33,9 @@ INSERT INTO public.roles_permisos (rol_id,permiso_id,activo) VALUES
 	 (1,6,true),
 	 (1,7,true),
 	 (1,8,true),
-	 (1,9,true);
+	 (1,9,true),
+	 (1,10,true),
+	 (1,11,true);
 
 INSERT INTO public.usuarios_roles (usuario_id,rol_id,activo) VALUES
 	 (1,1,true);
@@ -95,13 +99,17 @@ INSERT INTO public.dientes (codigo,temporal,cantidad_caras,activo) VALUES
 
 	INSERT INTO public.estados_movimientos (tabla_id,estado_actual,estado_anterior_id,puede_avanzar,activo) VALUES
 	 ('citas_medicas','Pendiente',NULL,true,true),
-	 ('citas_medicas','Confirmado',5,true,true),
-	 ('citas_medicas','Cancelado',6,false,true),
-	 ('citas_medicas','Cancelado',5,false,true),
+	 ('citas_medicas','Confirmado',1,true,true),
+	 ('citas_medicas','Cancelado',2,false,true),
+	 ('citas_medicas','Cancelado',1,false,true),
 	 ('facturas','Pendiente',NULL,true,true),
 	 ('pacientes_dientes_detalle','Caries',NULL,false,true),
 	 ('pacientes_dientes_detalle','Fracturas',NULL,false,true),
-	 ('pacientes_dientes_detalle','Normal',NULL,false,true);
+	 ('pacientes_dientes_detalle','Normal',NULL,false,true),
+	 ('pacientes_dientes_historial','Pendiente',NULL,true,true),
+	 ('pacientes_dientes_historial','Facturado',13,false,true),
+	 ('pacientes_dientes_historial','Presu',13,true,true),
+	 ('pacientes_dientes_historial','Facturado',15,false,true);
 
 INSERT INTO public.impuestos (codigo,descripcion,porcentaje,activo) VALUES
 	 ('IVA 10','IVA del 10%',10,true),

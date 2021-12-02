@@ -14,9 +14,18 @@ class pacientes_dientes_historial extends Sequelize.Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    paciente_diente_id: {
+    paciente_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      comment: "Campo que hace referencia al paciente",
+      references: {
+        model: 'pacientes',
+        key: 'id'
+      }
+    },
+    paciente_diente_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
       comment: "Campo que hace referencia al diente del paciente",
       references: {
         model: 'pacientes_dientes',

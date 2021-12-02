@@ -134,6 +134,8 @@ function initModels(sequelize) {
   pacientes.hasMany(fichas_medicas, { as: "fichas_medicas", foreignKey: "paciente_id"});
   pacientes_dientes.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
   pacientes.hasMany(pacientes_dientes, { as: "pacientes_dientes", foreignKey: "paciente_id"});
+  pacientes_dientes_historial.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
+  pacientes.hasMany(pacientes_dientes_historial, { as: "pacientes_dientes_historials", foreignKey: "paciente_id"});
   presupuestos.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
   pacientes.hasMany(presupuestos, { as: "presupuestos", foreignKey: "paciente_id"});
   pacientes_dientes_detalle.belongsTo(pacientes_dientes, { as: "paciente_diente", foreignKey: "paciente_diente_id"});

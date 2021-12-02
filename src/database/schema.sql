@@ -152,7 +152,7 @@ COMMENT ON COLUMN public.especialidades.activo IS 'Indica si la especialidad est
 CREATE TABLE public.estados_movimientos (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	tabla_id varchar(50) NOT NULL, -- Nombre de la tabla
-	estado_actual varchar(10) NOT NULL, -- Estado actual del proceso
+	estado_actual varchar(20) NOT NULL, -- Estado actual del proceso
 	estado_anterior_id int2 NULL, -- Campo que hace referencia al estado anterior
 	puede_avanzar bool NOT NULL DEFAULT true, -- Campo que indica si puede avanzar el proceso al siguiente estado
 	activo bool NOT NULL DEFAULT true, -- Indica si el estado del movimiento está o no activo
@@ -243,7 +243,8 @@ COMMENT ON COLUMN public.pacientes_dientes.activo IS 'Indica si el diente del pa
 
 CREATE TABLE public.pacientes_dientes_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	paciente_diente_id int4 NOT NULL, -- Campo que hace referencia al diente del paciente
+	paciente_id int4 NOT NULL, -- Campo que hace referencia al paciente
+	paciente_diente_id int4 NULL, -- Campo que hace referencia al diente del paciente
 	estado_detalle_id int2 NOT NULL, -- Campo que hace referencia al estado del detalle del diente
 	cara int2 NOT NULL, -- Indica el número de cara que corresponde el detalle
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle del diente está o no activo
@@ -253,6 +254,7 @@ CREATE TABLE public.pacientes_dientes_detalle (
 );
 COMMENT ON TABLE public.pacientes_dientes_detalle IS 'Representa el detalle del diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.pacientes_dientes_detalle.paciente_id IS 'Campo que hace referencia al paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.paciente_diente_id IS 'Campo que hace referencia al diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.estado_detalle_id IS 'Campo que hace referencia al estado del detalle del diente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.cara IS 'Indica el número de cara que corresponde el detalle';

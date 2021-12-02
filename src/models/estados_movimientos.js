@@ -15,7 +15,7 @@ class estados_movimientos extends Sequelize.Model {
       primaryKey: true
     },
     tabla_id: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(50),
       allowNull: false,
       comment: "Nombre de la tabla"
     },

@@ -7,6 +7,8 @@ const get_paciente_dientes = require("./pacientes_dientes").get_paciente_dientes
 const delete_paciente_dientes = require("./pacientes_dientes").delete_paciente_dientes
 const create_paciente_dientes = require("./pacientes_dientes").create_paciente_dientes
 const update_paciente_dientes = require("./pacientes_dientes").update_paciente_dientes
+const get_paciente_historial = require("./pacientes_dientes_historial").get_paciente_historial
+const insert_paciente_historial = require("./pacientes_dientes_historial").insert_paciente_historial
 const { Op } = require("sequelize")
 const validarFecha = require("../helpers/index").validarFecha
 
@@ -49,7 +51,7 @@ module.exports = {
     try {
       const { id, apellidos, ciudad, direccion, email,
         fecha_nacimiento, nombres, telefono, tipo_documento_id,
-        ficha_medica, dientes } = req.body;
+        ficha_medica, dientes, tratamientos } = req.body;
 
       const paciente_editar = await pacienteModel.findOne({
         where: {
@@ -59,8 +61,6 @@ module.exports = {
           }
         }
       })
-
-      //return res.status(200).send({ mensaje: "OK" })
 
       if (!paciente_editar) {
         return res.status(500).send({ mensaje: "No existe el paciente a editar." })
@@ -78,6 +78,9 @@ module.exports = {
       await paciente_editar.save()
       await update_ficha_medicas(ficha_medica)
       await update_paciente_dientes(dientes)
+      if (tratamientos) {
+        await insert_paciente_historial(tratamientos)
+      }
 
       return res.status(200).json({ mensaje: "Paciente editado con éxito.", datos: paciente_editar })
     } catch (error) {
@@ -144,10 +147,12 @@ module.exports = {
       const retornar = await Promise.all(pacientes_filtrados.map(async paciente => {
         let ficha_medica = await get_ficha_medicas(paciente.id)
         let dientes = await get_paciente_dientes(paciente.id)
+        let historial = await get_paciente_historial(paciente.id)
         return {
           ...paciente.dataValues,
-          ficha_medica: ficha_medica,
-          dientes: dientes
+          ficha_medica,
+          dientes,
+          historial
         }
       }))
 
@@ -168,10 +173,12 @@ module.exports = {
       const retornar = await Promise.all(paciente_lista.map(async paciente => {
         let ficha_medica = await get_ficha_medicas(paciente.id)
         let dientes = await get_paciente_dientes(paciente.id)
+        let historial = await get_paciente_historial(paciente.id)
         return {
           ...paciente.dataValues,
-          ficha_medica: ficha_medica,
-          dientes: dientes
+          ficha_medica,
+          dientes,
+          historial
         }
       }))
 

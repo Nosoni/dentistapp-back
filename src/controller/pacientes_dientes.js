@@ -20,6 +20,9 @@ module.exports = {
           activo: true
         }
       },
+      order: [
+        ['diente_id'],
+      ],
     })
     return paciente_diente
   },
