@@ -15,7 +15,7 @@ module.exports = {
       const { cabecera, detalle } = req.body;
 
       const estado_inicial = await getEstadoInicialTabla('facturas')
-      console.log("estado inicial")
+      console.log("estado inicial", estado_inicial)
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {
           [Op.and]: {
