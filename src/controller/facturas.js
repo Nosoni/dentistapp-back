@@ -26,7 +26,7 @@ module.exports = {
         },
       })
       let total = 0;
-      console.log("estado final")
+      console.log("estado final", estado_movimiento)
 
       const factura = await facturaModel.create({ ...cabecera, estado_factura_id: estado_movimiento.id })
       console.log("factura")
