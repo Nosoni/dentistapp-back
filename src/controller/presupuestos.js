@@ -16,38 +16,29 @@ module.exports = {
     try {
       const { cabecera, detalle } = req.body;
 
-      const estado_inicial = await getEstadoInicialTabla('facturas')
+      const estado_inicial = await getEstadoInicialTabla('presupuestos')
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {
           [Op.and]: {
             activo: true,
-            tabla_id: 'facturas',
+            tabla_id: 'presupuestos',
             estado_anterior_id: estado_inicial.id,
           }
         },
       })
       let total = 0;
 
-      const factura = await facturaModel.create({ ...cabecera, estado_factura_id: estado_movimiento.id })
-      const factura_detalle = await Promise.all(detalle.map(
+      const presupuesto = await presupuestoModel.create({ ...cabecera, estado_presupuesto_id: estado_movimiento.id })
+      const presupuesto_detalle = await Promise.all(detalle.map(
         async (det) => {
           total += det.precio
-          return await facturaDetalleModel.create({ factura_id: factura.id, ...det })
+          return await presupuestoDetalleModel.create({ presupuesto_id: presupuesto.id, ...det })
         })
       )
 
-      await deudaModel.create({
-        factura_id: factura.id,
-        fecha_insercion: moment(),
-        fecha_vencimiento: moment(),
-        cuota_numero: 1,
-        debe: total,
-        haber: 0
-      })
+      const retornar = { presupuesto, presupuesto_detalle }
 
-      const retornar = { factura, factura_detalle }
-
-      return res.status(200).json({ mensaje: "Factura creada con éxito.", datos: retornar })
+      return res.status(200).json({ mensaje: "Presupuesto creado con éxito.", datos: retornar })
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
     }

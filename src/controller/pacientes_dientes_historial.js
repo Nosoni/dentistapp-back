@@ -25,7 +25,7 @@ module.exports = {
       await pacienteDienteHistorialModel.create({ ...tratamiento, estado_historial_id: estado_inicial.id })
     }))
   },
-  async getHistorialParaFacturar(req, res) {
+  async getHistorialInicial(req, res) {
     try {
       const { paciente_id } = req.params
       const estado_inicial = await getEstadoInicialTabla('pacientes_dientes_historial')
