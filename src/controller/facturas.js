@@ -16,6 +16,7 @@ module.exports = {
 
       const estado_inicial = await getEstadoInicialTabla('facturas')
       console.log("estado inicial", estado_inicial)
+      console.log("estado inicial", estado_inicial.id)
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {
           [Op.and]: {
