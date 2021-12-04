@@ -15,6 +15,7 @@ module.exports = {
       const { cabecera, detalle } = req.body;
 
       const estado_inicial = await getEstadoInicialTabla('facturas')
+      console.log("estado inicial")
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {
           [Op.and]: {
@@ -25,8 +26,10 @@ module.exports = {
         },
       })
       let total = 0;
+      console.log("estado final")
 
       const factura = await facturaModel.create({ ...cabecera, estado_factura_id: estado_movimiento.id })
+      console.log("factura")
       const factura_detalle = await Promise.all(detalle.map(
         async (det) => {
           total += det.precio
@@ -35,6 +38,7 @@ module.exports = {
           return factDet
         })
       )
+      console.log("detalle")
 
       await deudaModel.create({
         factura_id: factura.id,
@@ -44,7 +48,7 @@ module.exports = {
         debe: total,
         haber: 0
       })
-
+      console.log("deuda")
       const retornar = { factura, factura_detalle }
 
       return res.status(200).json({ mensaje: "Factura creada con éxito.", datos: retornar })
