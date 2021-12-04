@@ -1,4 +1,6 @@
+const presupuestoModel = require("../models/inicializar_modelos").presupuestos;
 const facturaModel = require("../models/inicializar_modelos").facturas;
+const presupuestoDetalleModel = require("../models/inicializar_modelos").presupuestos_detalle;
 const facturaDetalleModel = require("../models/inicializar_modelos").facturas_detalle;
 const pacienteModel = require("../models/inicializar_modelos").pacientes;
 const impuestoModel = require("../models/inicializar_modelos").impuestos;
@@ -30,9 +32,7 @@ module.exports = {
       const factura_detalle = await Promise.all(detalle.map(
         async (det) => {
           total += det.precio
-          let factDet = await facturaDetalleModel.create({ factura_id: factura.id, ...det })
-          //actualizar historial
-          return factDet
+          return await facturaDetalleModel.create({ factura_id: factura.id, ...det })
         })
       )
 
@@ -67,7 +67,7 @@ module.exports = {
         opciones.fecha = { [Op.lte]: moment(fecha_fin).set({ hour: 23, minute: 59, second: 59, millisecond: 59 }) }
       }
 
-      let facturas = await facturaModel.findAll({
+      let presupuestos = await presupuestoModel.findAll({
         include: { model: pacienteModel, as: "paciente", where: { activo: true } },
         where: {
           [Op.and]: {
@@ -75,14 +75,13 @@ module.exports = {
             activo: true
           }
         }
-      }).then(async factura => {
-        return await Promise.all(factura.map(async fact => {
+      }).then(async presupuesto => {
+        return await Promise.all(presupuesto.map(async presu => {
           let total = 0
-          let factura_detalle = await facturaDetalleModel.findAll({
-            include: { model: impuestoModel, as: "impuesto", where: { activo: true } },
+          let presupuesto_detalle = await presupuestoDetalleModel.findAll({
             where: {
               [Op.and]: {
-                factura_id: fact.id,
+                presupuesto_id: presu.id,
                 activo: true
               }
             }
@@ -93,17 +92,16 @@ module.exports = {
               return {
                 ...det.dataValues,
                 historial: `${historial.tratamiento_servicio.nombre} - ${historial.tratamiento_servicio.descripcion}`,
-                impuesto: det.impuesto.codigo
               }
             }))
           })
 
-          fact.dataValues.total = total
-          return { ...fact.dataValues, factura_detalle }
+          presu.dataValues.total = total
+          return { ...presu.dataValues, presupuesto_detalle }
         }))
       })
 
-      return res.status(200).json({ datos: facturas })
+      return res.status(200).json({ datos: presupuestos })
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
     }

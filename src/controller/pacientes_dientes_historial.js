@@ -53,5 +53,20 @@ module.exports = {
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
     }
-  }
+  },
+  async get_paciente_historialByID(id) {
+    const paciente_historial = await pacienteDienteHistorialModel.findOne({
+      include: { model: tratamientoServicioModel, as: "tratamiento_servicio", where: { activo: true } },
+      where: {
+        [Op.and]: {
+          id,
+          activo: true
+        }
+      },
+      order: [
+        ['id', 'DESC'],
+      ],
+    })
+    return paciente_historial
+  },
 }
