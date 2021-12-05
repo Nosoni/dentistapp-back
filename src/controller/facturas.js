@@ -4,6 +4,7 @@ const pacienteModel = require("../models/inicializar_modelos").pacientes;
 const impuestoModel = require("../models/inicializar_modelos").impuestos;
 const estadoMovimientoModel = require("../models/inicializar_modelos").estados_movimientos;
 const deudaModel = require("../models/inicializar_modelos").deudas;
+const pacienteDienteHistorialModel = require("../models/inicializar_modelos").pacientes_dientes_historial;
 const getEstadoInicialTabla = require('./estados_movimientos').getEstadoInicialTabla
 const get_paciente_historialByID = require('./pacientes_dientes_historial').get_paciente_historialByID
 const moment = require('moment')
@@ -13,6 +14,10 @@ module.exports = {
   async crear(req, res) {
     try {
       const { cabecera, detalle } = req.body;
+
+      if (!cabecera || !detalle) {
+        return res.status(500).json({ mensaje: 'La facutra no cuenta con todos los campos. Favor verificar.' })
+      }
 
       const estado_inicial = await getEstadoInicialTabla('facturas')
       const estado_movimiento = await estadoMovimientoModel.findOne({
@@ -31,7 +36,7 @@ module.exports = {
         async (det) => {
           total += det.precio
           let factDet = await facturaDetalleModel.create({ factura_id: factura.id, ...det })
-          //actualizar historial
+          await pacienteDienteHistorialModel.update({ estado_historial_id: 16 }, { where: { id: det.paciente_diente_historial_id } })
           return factDet
         })
       )
@@ -105,6 +110,62 @@ module.exports = {
       return res.status(200).json({ datos: facturas })
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
+    }
+  },
+  async reporteFacturas(filtro) {
+    try {
+      const { paciente_id, fecha_inicio, fecha_fin } = filtro
+
+      let opciones = {}
+      if (paciente_id) {
+        opciones.paciente_id = paciente_id
+      }
+      if (fecha_inicio) {
+        opciones.fecha = { [Op.gte]: moment(fecha_inicio).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }) }
+      }
+      if (fecha_fin) {
+        opciones.fecha = { [Op.lte]: moment(fecha_fin).set({ hour: 23, minute: 59, second: 59, millisecond: 59 }) }
+      }
+
+      let facturas = await facturaModel.findAll({
+        include: { model: pacienteModel, as: "paciente", where: { activo: true } },
+        where: {
+          [Op.and]: {
+            ...opciones,
+            activo: true
+          }
+        }
+      }).then(async factura => {
+        return await Promise.all(factura.map(async fact => {
+          let total = 0
+          let factura_detalle = await facturaDetalleModel.findAll({
+            include: { model: impuestoModel, as: "impuesto", where: { activo: true } },
+            where: {
+              [Op.and]: {
+                factura_id: fact.id,
+                activo: true
+              }
+            }
+          }).then(async detalle => {
+            return Promise.all(await detalle.map(async det => {
+              total += det.precio
+              const historial = await get_paciente_historialByID(det.paciente_diente_historial_id)
+              return {
+                ...det.dataValues,
+                historial: `${historial.tratamiento_servicio.nombre} - ${historial.tratamiento_servicio.descripcion}`,
+                impuesto: det.impuesto.codigo
+              }
+            }))
+          })
+
+          fact.dataValues.total = total
+          return { ...fact.dataValues, factura_detalle }
+        }))
+      })
+
+      return facturas
+    } catch (error) {
+      console.log(error)
     }
   }
 }

@@ -22,8 +22,8 @@ const tipos_documentos = require('./tipos_documentos')
 const tratamientos_servicios = require('./tratamientos_servicios')
 const usuarios = require('./usuarios')
 const usuarios_roles = require('./usuarios_roles')
-//#endregion routes
 const reportes = require('./reportes')
+//#endregion routes
 const router = express.Router()
 const jwt = require("jsonwebtoken")
 const definiciones = require('../constantes')

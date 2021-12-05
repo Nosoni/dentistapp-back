@@ -1,11 +1,8 @@
 const presupuestoModel = require("../models/inicializar_modelos").presupuestos;
-const facturaModel = require("../models/inicializar_modelos").facturas;
 const presupuestoDetalleModel = require("../models/inicializar_modelos").presupuestos_detalle;
-const facturaDetalleModel = require("../models/inicializar_modelos").facturas_detalle;
 const pacienteModel = require("../models/inicializar_modelos").pacientes;
-const impuestoModel = require("../models/inicializar_modelos").impuestos;
 const estadoMovimientoModel = require("../models/inicializar_modelos").estados_movimientos;
-const deudaModel = require("../models/inicializar_modelos").deudas;
+const pacienteDienteHistorialModel = require("../models/inicializar_modelos").pacientes_dientes_historial;
 const getEstadoInicialTabla = require('./estados_movimientos').getEstadoInicialTabla
 const get_paciente_historialByID = require('./pacientes_dientes_historial').get_paciente_historialByID
 const moment = require('moment')
@@ -15,6 +12,10 @@ module.exports = {
   async crear(req, res) {
     try {
       const { cabecera, detalle } = req.body;
+
+      if (!cabecera || !detalle) {
+        return res.status(500).json({ mensaje: 'La facutra no cuenta con todos los campos. Favor verificar.' })
+      }
 
       const estado_inicial = await getEstadoInicialTabla('presupuestos')
       const estado_movimiento = await estadoMovimientoModel.findOne({
@@ -32,6 +33,7 @@ module.exports = {
       const presupuesto_detalle = await Promise.all(detalle.map(
         async (det) => {
           total += det.precio
+          await pacienteDienteHistorialModel.update({ estado_historial_id: 15 }, { where: { id: det.paciente_diente_historial_id } })
           return await presupuestoDetalleModel.create({ presupuesto_id: presupuesto.id, ...det })
         })
       )

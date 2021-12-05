@@ -13,6 +13,17 @@ module.exports = {
       },
     })
   },
+  async getEstadosByActual(tabla_id, estado_actual) {
+    return await estadoMovimientoModel.findAll({
+      where: {
+        [Op.and]: {
+          activo: true,
+          tabla_id,
+          estado_actual
+        }
+      },
+    })
+  },
   async filtrar(req, res) {
     try {
       const { tabla_id, estado_anterior_id } = req.body;

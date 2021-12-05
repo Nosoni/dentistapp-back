@@ -6,6 +6,10 @@ const definiciones = require('./src/constantes/index')
 const privadas = require("./src/routes/index")
 const publicas = require('./src/routes/publicas')
 const cors = require('cors')
+let jsreport = require('jsreport-core')();
+jsreport.use(require('jsreport-handlebars')());
+jsreport.use(require('jsreport-chrome-pdf')());
+jsreport.init();
 
 const app = express()
 console.log(config.env);
@@ -13,6 +17,7 @@ console.log(config.env);
 //settings
 app.set(definiciones.puerto, config.port)
 app.set(definiciones.llave_secreta, config.llaveSecreta);
+app.set(definiciones.jsreport, jsreport)
 
 //middlewares
 app.use(express.json())

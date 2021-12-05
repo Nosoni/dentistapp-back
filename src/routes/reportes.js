@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const administracion = require('../reportes/administracion')
+const facturacion = require('../reportes/facturacion')
 
-router.use("/administracion", administracion)
+router.use("/facturacion", facturacion)
 
 module.exports = router;
