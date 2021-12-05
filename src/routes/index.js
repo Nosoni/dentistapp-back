@@ -23,6 +23,7 @@ const tratamientos_servicios = require('./tratamientos_servicios')
 const usuarios = require('./usuarios')
 const usuarios_roles = require('./usuarios_roles')
 //#endregion routes
+const reportes = require('./reportes')
 const router = express.Router()
 const jwt = require("jsonwebtoken")
 const definiciones = require('../constantes')
@@ -50,6 +51,7 @@ router.use("/tipos_documentos", tipos_documentos)
 router.use("/tratamientos_servicios", tratamientos_servicios)
 router.use("/usuarios", usuarios)
 router.use("/usuarios_roles", usuarios_roles)
+router.use("/reportes", reportes)
 
 async function requiereAutenticacion(req, res, next) {
   try {
