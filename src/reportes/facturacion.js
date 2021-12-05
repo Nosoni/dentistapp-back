@@ -20,34 +20,39 @@ const contenido = `
   <h1>Facturas clientes</h1>
 
   <table>
-    <tr>
-      <th>
-          Documento
-      </th>
-      <th>
-          Paciente
-      </th>
-      <th>
-          Comprobante
-      </th>
-      <th>
-          Fecha
-      </th>
-      <th>
-          Total
-      </th>
-    </tr>
-    {{for tabla}}
-      <tr class="item">
-        <td>
-          {{:FECHA}}
-        </td>
-        <td>
-          {{:COMPROBANTE}}
-        </td>
+    <thead>
+      <tr>
+        <th>
+            Documento
+        </th>
+        <th>
+            Paciente
+        </th>
+        <th>
+            Comprobante
+        </th>
+        <th>
+            Fecha
+        </th>
+        <th>
+            Total
+        </th>
       </tr>
-    {{/for}}
-  </table>
+    </thead>
+    <tbody>
+      <tr>
+        {{#each datos}}
+          {{#with this}}
+            <td>{{documento}}</td>
+            <td>{{paciente}}</td>
+            <td>{{comprobante}}</td>
+            <td>{{fecha}}</td>
+            <td>{{total}}</td>
+          {{/with}}    
+        {{/each}}
+      </tr>
+    </tbody>
+  </table> 
 </div>
 `;
 
@@ -56,10 +61,6 @@ async function filtrar(req, res) {
   let fs = require('fs');
   const jsreport = req.app.get(definiciones.jsreport)
   let nombreArchivo = "prueba" + '-' + Date.now() + '.pdf';
-
-  console.log('Renderizando reporte: ' + nombreArchivo);
-  console.log(process.cwd())
-  console.log(__dirname)
 
   const facturas = await reporteFacturas(req.body)
   const tabla = facturas.map(factura => {
@@ -72,8 +73,6 @@ async function filtrar(req, res) {
     }
   })
 
-  console.log(tabla)
-
   try {
     await jsreport.render({
       template: {
@@ -84,13 +83,14 @@ async function filtrar(req, res) {
           orientation: "vertical",
         },
       },
-      resources: {
-        tabla: JSON.stringify(tabla)
+      data: {
+        datos: tabla,
       }
     }).then(resp => {
       fs.writeFileSync((__dirname + '/outputs/' + nombreArchivo), resp.content)
-      console.log('Archivo creado: ' + nombreArchivo);
-    }).catch(err => console.log(err));
+    }).catch(error =>
+      console.log(error)
+    );
   } catch (error) {
     console.log(error)
   }
@@ -105,8 +105,6 @@ async function filtrar(req, res) {
     res.setHeader('Content-Disposition', 'attachment; filename=' + nombreArchivo);
 
     await file.pipe(res);
-
-    console.log('PDF generado correctamente: ' + nombreArchivo);
 
   } catch (error) {
     console.log(error)
