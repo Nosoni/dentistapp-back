@@ -22,7 +22,8 @@ INSERT INTO public.permisos (nombre,descripcion,activo) VALUES
 	 ('menu_ver_insumo','Concede acceso al menú insumo',true),
 	 ('menu_ver_cita_medica','Concede acceso al menú cita médica',true),
 	 ('menu_ver_facturacion','Concede acceso al menú facturación',true),
-	 ('menu_ver_presupuesto','Concede acceso al menú presupuesto',true);
+	 ('menu_ver_presupuesto','Concede acceso al menú presupuesto',true),
+	 ('menu_ver_actualizar_stock','Concede acceso al menú actualizar stock',true);
    
 INSERT INTO public.roles_permisos (rol_id,permiso_id,activo) VALUES
 	 (1,1,true),
@@ -103,15 +104,24 @@ INSERT INTO public.dientes (codigo,temporal,cantidad_caras,activo) VALUES
 	 ('citas_medicas','Cancelado',2,false,true),
 	 ('citas_medicas','Cancelado',1,false,true),
 	 ('facturas','Pendiente',NULL,true,true),
+	 ('facturas','Facturado',5,false,true),
 	 ('pacientes_dientes_detalle','Caries',NULL,false,true),
 	 ('pacientes_dientes_detalle','Fracturas',NULL,false,true),
 	 ('pacientes_dientes_detalle','Normal',NULL,false,true),
 	 ('pacientes_dientes_historial','Pendiente',NULL,true,true),
-	 ('pacientes_dientes_historial','Facturado',13,false,true),
-	 ('pacientes_dientes_historial','Presu',13,true,true),
-	 ('pacientes_dientes_historial','Facturado',15,false,true);
+	 ('pacientes_dientes_historial','Facturado',10,false,true),
+	 ('pacientes_dientes_historial','Presupuestado',10,true,true),
+	 ('pacientes_dientes_historial','Facturado',12,false,true),
+	 ('presupuestos','Pendiente',NULL,true,true),
+	 ('presupuestos','Presupuestado',14,true,true),
+	 ('actualizar_stock','Pendiente',NULL,true,true),
+	 ('actualizar_stock','Actualizado',16,true,true);
 
 INSERT INTO public.impuestos (codigo,descripcion,porcentaje,activo) VALUES
 	 ('IVA 10','IVA del 10%',10,true),
 	 ('IVA 5','IVA del 5%',5,true),
 	 ('Excenta','IVA del 0%, excenta',0,true);
+
+INSERT INTO public.tipos_movimientos_stock (nombre,descripcion,signo,activo) VALUES
+	 ('ingreso','suma stock',1,true),
+	 ('egreso','resta stock',-1,true);

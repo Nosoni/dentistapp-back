@@ -16,7 +16,7 @@ module.exports = {
       const { cabecera, detalle } = req.body;
 
       if (!cabecera || !detalle) {
-        return res.status(500).json({ mensaje: 'La facutra no cuenta con todos los campos. Favor verificar.' })
+        return res.status(500).json({ mensaje: 'La factura no cuenta con todos los campos. Favor verificar.' })
       }
 
       const estado_inicial = await getEstadoInicialTabla('facturas')
