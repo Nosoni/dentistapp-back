@@ -30,7 +30,7 @@ class deudas_detalle extends Sequelize.Model {
       comment: "Fecha de inserción del detalle de la deuda"
     },
     cobranza_detalle_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.SMALLINT,
       allowNull: false,
       comment: "Campo que hace referencia al detalle de la cobranza",
       references: {
@@ -39,12 +39,12 @@ class deudas_detalle extends Sequelize.Model {
       }
     },
     debe: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: "Monto del debe"
     },
     haber: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: "Monto del haber"
     },

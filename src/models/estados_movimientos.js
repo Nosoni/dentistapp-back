@@ -20,7 +20,7 @@ class estados_movimientos extends Sequelize.Model {
       comment: "Nombre de la tabla"
     },
     estado_actual: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(20),
       allowNull: false,
       comment: "Estado actual del proceso"
     },

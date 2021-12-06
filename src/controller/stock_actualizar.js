@@ -2,6 +2,8 @@ const stockActualizarModel = require("../models/inicializar_modelos").stock_actu
 const stockActualizarDetalleModel = require("../models/inicializar_modelos").stock_actualizar_detalle;
 const estadoMovimientoModel = require("../models/inicializar_modelos").estados_movimientos;
 const insumoModel = require("../models/inicializar_modelos").insumos;
+const tipoMovimientoStockModel = require("../models/inicializar_modelos").tipos_movimientos_stock;
+const stockInsumoMovimientoModel = require("../models/inicializar_modelos").stock_insumos_movimientos;
 const getEstadoInicialTabla = require('./estados_movimientos').getEstadoInicialTabla
 const moment = require('moment')
 const { Op } = require("sequelize")
@@ -26,13 +28,22 @@ module.exports = {
         },
       })
 
+      const tipo_movimiento = await tipoMovimientoStockModel.findOne({ where: { activo: true, id: cabecera.tipo_movimiento_id } })
       const stock_actualizar = await stockActualizarModel.create({ ...cabecera, estado_movimiento_id: estado_movimiento.id })
       const stock_actualizar_detalle = await Promise.all(detalle.map(
         async (det) => {
-          //await pacienteDienteHistorialModel.update({ estado_historial_id: 15 }, { where: { id: det.paciente_diente_historial_id } })
-          //actualizar stock
-          //segun movimiento
-          return await stockActualizarDetalleModel.create({ stock_actualizar_id: stock_actualizar.id, ...det })
+
+          const new_detalle = await stockActualizarDetalleModel.create({ stock_actualizar_id: stock_actualizar.id, ...det })
+          await stockInsumoMovimientoModel.create({
+            insumo_id: det.insumo_id,
+            stock_actualizar_id: stock_actualizar.id,
+            stock_actualizar_detalle_id: new_detalle.id,
+            cantidad: det.cantidad * tipo_movimiento.signo,
+            fecha_insercion: moment(),
+            fecha_movimiento: stock_actualizar.fecha
+          })
+
+          return new_detalle
         })
       )
 

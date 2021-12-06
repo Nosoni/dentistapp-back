@@ -40,12 +40,12 @@ class deudas extends Sequelize.Model {
       comment: "Cuota número de la deuda"
     },
     debe: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: "Monto del debe"
     },
     haber: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: "Monto del haber"
     },
