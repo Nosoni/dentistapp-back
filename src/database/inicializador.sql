@@ -23,7 +23,10 @@ INSERT INTO public.permisos (nombre,descripcion,activo) VALUES
 	 ('menu_ver_cita_medica','Concede acceso al menú cita médica',true),
 	 ('menu_ver_facturacion','Concede acceso al menú facturación',true),
 	 ('menu_ver_presupuesto','Concede acceso al menú presupuesto',true),
-	 ('menu_ver_actualizar_stock','Concede acceso al menú actualizar stock',true);
+	 ('menu_ver_actualizar_stock','Concede acceso al menú actualizar stock',true),
+	 ('menu_ver_cobranza','Concede acceso al menú cobranza',true),
+	 ('menu_ver_reporte_inventario','Concede acceso al menú reporte inventario',true),
+	 ('menu_ver_reporte_facturacion','Concede acceso al menú reporte facturacion',true);
    
 INSERT INTO public.roles_permisos (rol_id,permiso_id,activo) VALUES
 	 (1,1,true),
@@ -100,23 +103,25 @@ INSERT INTO public.dientes (codigo,temporal,cantidad_caras,activo) VALUES
 	 (85,true,5,true);
 
 	INSERT INTO public.estados_movimientos (tabla_id,estado_actual,estado_anterior_id,puede_avanzar,activo) VALUES
-	 ('citas_medicas','Pendiente',NULL,true,true),
-	 ('citas_medicas','Confirmado',1,true,true),
-	 ('citas_medicas','Cancelado',2,false,true),
-	 ('citas_medicas','Cancelado',1,false,true),
-	 ('facturas','Pendiente',NULL,true,true),
-	 ('facturas','Facturado',5,false,true),
-	 ('pacientes_dientes_detalle','Caries',NULL,false,true),
-	 ('pacientes_dientes_detalle','Fracturas',NULL,false,true),
-	 ('pacientes_dientes_detalle','Normal',NULL,false,true),
-	 ('pacientes_dientes_historial','Pendiente',NULL,true,true),
-	 ('pacientes_dientes_historial','Facturado',10,false,true),
-	 ('pacientes_dientes_historial','Presupuestado',10,true,true),
-	 ('pacientes_dientes_historial','Facturado',12,false,true),
-	 ('presupuestos','Pendiente',NULL,true,true),
-	 ('presupuestos','Presupuestado',14,true,true),
-	 ('actualizar_stock','Pendiente',NULL,true,true),
-	 ('actualizar_stock','Actualizado',16,true,true);
+	 ('citas_medicas','Pendiente',NULL,true,true),--1
+	 ('citas_medicas','Confirmado',1,true,true),--2
+	 ('citas_medicas','Cancelado',2,false,true),--3
+	 ('citas_medicas','Cancelado',1,false,true),--4
+	 ('facturas','Pendiente',NULL,true,true),--5
+	 ('facturas','Facturado',5,false,true),--6
+	 ('pacientes_dientes_detalle','Caries',NULL,false,true),--7
+	 ('pacientes_dientes_detalle','Fracturas',NULL,false,true),--8
+	 ('pacientes_dientes_detalle','Normal',NULL,false,true),--9
+	 ('pacientes_dientes_historial','Pendiente',NULL,true,true),--10
+	 ('pacientes_dientes_historial','Facturado',10,false,true),--11
+	 ('pacientes_dientes_historial','Presupuestado',10,true,true),--12
+	 ('pacientes_dientes_historial','Facturado',12,false,true),--13
+	 ('presupuestos','Pendiente',NULL,true,true),--14
+	 ('presupuestos','Presupuestado',14,true,true),--15
+	 ('actualizar_stock','Pendiente',NULL,true,true),--16
+	 ('actualizar_stock','Actualizado',16,true,true),--17
+	 ('cobranzas','Pendiente',NULL,true,true),--18
+	 ('cobranzas','Cobrado',18,true,true);--19
 
 INSERT INTO public.impuestos (codigo,descripcion,porcentaje,activo) VALUES
 	 ('IVA 10','IVA del 10%',10,true),

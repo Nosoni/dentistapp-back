@@ -27,15 +27,13 @@ module.exports = {
       } else {
         stock_insumos_movimientos = await stockInsumoMovimientoModel.findAll({
           include: { model: insumoModel, as: "insumo" },
-          attributes: ['id',
-            'insumo_id',
+          attributes: ['insumo_id',
             [sequelize.fn('sum', sequelize.col('cantidad')), 'stock']
           ],
           where: {
             activo: true
           },
           group: ['insumo.id', 'insumo_id'],
-          raw: true
         })
       }
 

@@ -1,11 +1,13 @@
 const express = require('express')
 const router = express.Router()
+const cobranzas = require('../reportes/cobranzas')
 const facturacion = require('../reportes/facturas')
 const inventario = require('../reportes/inventario')
 const pacientes = require('../reportes/pacientes')
 const presupuestos = require('../reportes/presupuestos')
 const usuarios = require('../reportes/usuarios')
 
+router.use("/cobranzas", cobranzas)
 router.use("/facturacion", facturacion)
 router.use("/inventario", inventario)
 router.use("/pacientes", pacientes)
