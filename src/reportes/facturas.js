@@ -19,7 +19,7 @@ const contenido = `
     }   
 </style>
 <div>
-  <h1>Facturas clientes</h1>
+  <h1>{{titulo}}</h1>
 
   <table>
     <thead>
@@ -87,6 +87,7 @@ async function filtrar(req, res) {
       },
       data: {
         datos: tabla,
+        titulo: 'Listado de facturas'
       }
     }).then(resp => {
       fs.writeFileSync((__dirname + '/outputs/' + nombreArchivo), resp.content)

@@ -1,6 +1,6 @@
 const express = require('express');
 const definiciones = require('../constantes');
-const { reportePacientes } = require('../controller/pacientes');
+const { reporteInventario } = require('../controller/stock_insumos_movimientos');
 const router = express.Router()
 
 const contenido = `
@@ -19,28 +19,19 @@ const contenido = `
     }   
 </style>
 <div>
-  <h1>{{titulo}}</h1>    
+  <h1>{{titulo}}</h1>
 
   <table>
     <thead>
       <tr>
         <th>
-            Documento
+            Insumo
         </th>
         <th>
-            Nombres
+            Descripción
         </th>
         <th>
-            Apellidos
-        </th>
-        <th>
-            Telefono
-        </th>
-        <th>
-            Email
-        </th>
-        <th>
-            Dirección
+            Stock
         </th>
       </tr>
     </thead>
@@ -48,12 +39,9 @@ const contenido = `
       {{#each datos}}
         {{#with this}}
           <tr>
-            <td>{{documento}}</td>
-            <td>{{nombres}}</td>
-            <td>{{apellidos}}</td>
-            <td>{{telefono}}</td>
-            <td>{{email}}</td>
-            <td>{{ciudad}}  {{direccion}}</td>
+            <td>{{insumo}}</td>
+            <td>{{insumo_descripcion}}</td>
+            <td>{{stock}}</td>
           </tr>
         {{/with}}    
       {{/each}}
@@ -68,17 +56,13 @@ async function filtrar(req, res) {
   const jsreport = req.app.get(definiciones.jsreport)
   let nombreArchivo = "prueba" + '-' + Date.now() + '.pdf';
 
-  const pacientes = await reportePacientes(req.body)
+  const inventarios = await reporteInventario(req.body)
 
-  const tabla = pacientes.map(paciente => {
+  const tabla = inventarios.map(inventario => {
     return {
-      documento: paciente.documento,
-      nombres: paciente.nombres,
-      apellidos: paciente.apellidos,
-      telefono: paciente.telefono,
-      email: paciente.email,
-      ciudad: paciente.ciudad,
-      direccion: paciente.direccion
+      insumo: inventario.insumo.nombre,
+      insumo_descripcion: inventario.insumo.descripcion,
+      stock: inventario.dataValues.stock
     }
   })
 
@@ -94,7 +78,7 @@ async function filtrar(req, res) {
       },
       data: {
         datos: tabla,
-        titulo: 'Listado de pacientes'
+        titulo: 'Inventario'
       }
     }).then(resp => {
       fs.writeFileSync((__dirname + '/outputs/' + nombreArchivo), resp.content)

@@ -19,7 +19,7 @@ const contenido = `
     }   
 </style>
 <div>
-  <h1>Listado de usuarios</h1>
+  <h1>{{titulo}}</h1>
 
   <table>
     <thead>
@@ -63,8 +63,6 @@ async function filtrar(req, res) {
     return new_usuario
   })
 
-  console.log(tabla)
-
   try {
     await jsreport.render({
       template: {
@@ -77,6 +75,7 @@ async function filtrar(req, res) {
       },
       data: {
         datos: tabla,
+        titulo: 'Listado de usuarios'
       }
     }).then(resp => {
       fs.writeFileSync((__dirname + '/outputs/' + nombreArchivo), resp.content)

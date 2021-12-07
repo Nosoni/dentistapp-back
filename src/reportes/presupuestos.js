@@ -1,6 +1,6 @@
 const express = require('express');
 const definiciones = require('../constantes');
-const { reportePacientes } = require('../controller/pacientes');
+const { reportePresupuesto } = require('../controller/presupuestos');
 const router = express.Router()
 
 const contenido = `
@@ -19,7 +19,7 @@ const contenido = `
     }   
 </style>
 <div>
-  <h1>{{titulo}}</h1>    
+  <h1>{{titulo}}</h1>
 
   <table>
     <thead>
@@ -28,19 +28,13 @@ const contenido = `
             Documento
         </th>
         <th>
-            Nombres
+            Paciente
         </th>
         <th>
-            Apellidos
+            Fecha
         </th>
         <th>
-            Telefono
-        </th>
-        <th>
-            Email
-        </th>
-        <th>
-            Dirección
+            Total
         </th>
       </tr>
     </thead>
@@ -49,11 +43,9 @@ const contenido = `
         {{#with this}}
           <tr>
             <td>{{documento}}</td>
-            <td>{{nombres}}</td>
-            <td>{{apellidos}}</td>
-            <td>{{telefono}}</td>
-            <td>{{email}}</td>
-            <td>{{ciudad}}  {{direccion}}</td>
+            <td>{{paciente}}</td>
+            <td>{{fecha}}</td>
+            <td>{{total}}</td>
           </tr>
         {{/with}}    
       {{/each}}
@@ -68,17 +60,13 @@ async function filtrar(req, res) {
   const jsreport = req.app.get(definiciones.jsreport)
   let nombreArchivo = "prueba" + '-' + Date.now() + '.pdf';
 
-  const pacientes = await reportePacientes(req.body)
-
-  const tabla = pacientes.map(paciente => {
+  const presupuestos = await reportePresupuesto(req.body)
+  const tabla = presupuestos.map(presupuesto => {
     return {
-      documento: paciente.documento,
-      nombres: paciente.nombres,
-      apellidos: paciente.apellidos,
-      telefono: paciente.telefono,
-      email: paciente.email,
-      ciudad: paciente.ciudad,
-      direccion: paciente.direccion
+      documento: presupuesto.paciente.documento,
+      paciente: `${presupuesto.paciente.nombres}, ${presupuesto.paciente.apellidos}`,
+      fecha: presupuesto.fecha,
+      total: presupuesto.total
     }
   })
 
@@ -94,7 +82,7 @@ async function filtrar(req, res) {
       },
       data: {
         datos: tabla,
-        titulo: 'Listado de pacientes'
+        titulo: 'Listado de presupuestos'
       }
     }).then(resp => {
       fs.writeFileSync((__dirname + '/outputs/' + nombreArchivo), resp.content)

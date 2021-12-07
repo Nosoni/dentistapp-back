@@ -47,6 +47,7 @@ router.use("/pacientes_dientes", pacientes_dientes)
 router.use("/pacientes_dientes_historial", pacientes_dientes_historial)
 router.use("/permisos", permisos)
 router.use("/presupuestos", presupuestos)
+router.use("/reportes", reportes)
 router.use("/roles", roles)
 router.use("/roles_permisos", roles_permisos)
 router.use("/stock_actualizar", stock_actualizar)
@@ -55,7 +56,6 @@ router.use("/tipos_movimientos_stock", tipos_movimientos_stock)
 router.use("/tratamientos_servicios", tratamientos_servicios)
 router.use("/usuarios", usuarios)
 router.use("/usuarios_roles", usuarios_roles)
-router.use("/reportes", reportes)
 
 async function requiereAutenticacion(req, res, next) {
   try {

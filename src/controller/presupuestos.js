@@ -98,5 +98,59 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
     }
+  },
+  async reportePresupuesto(filtro) {
+    try {
+      const { paciente_id, fecha_inicio, fecha_fin } = filtro
+
+      let opciones = {}
+      if (paciente_id) {
+        opciones.paciente_id = paciente_id
+      }
+      if (fecha_inicio) {
+        opciones.fecha = { [Op.gte]: moment(fecha_inicio).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }) }
+      }
+      if (fecha_fin) {
+        opciones.fecha = { [Op.lte]: moment(fecha_fin).set({ hour: 23, minute: 59, second: 59, millisecond: 59 }) }
+      }
+
+      let presupuestos = await presupuestoModel.findAll({
+        include: { model: pacienteModel, as: "paciente", where: { activo: true } },
+        where: {
+          [Op.and]: {
+            ...opciones,
+            activo: true
+          }
+        }
+      }).then(async presupuesto => {
+        return await Promise.all(presupuesto.map(async presu => {
+          let total = 0
+          let presupuesto_detalle = await presupuestoDetalleModel.findAll({
+            where: {
+              [Op.and]: {
+                presupuesto_id: presu.id,
+                activo: true
+              }
+            }
+          }).then(async detalle => {
+            return Promise.all(await detalle.map(async det => {
+              total += det.precio
+              const historial = await get_paciente_historialByID(det.paciente_diente_historial_id)
+              return {
+                ...det.dataValues,
+                historial: `${historial.tratamiento_servicio.nombre} - ${historial.tratamiento_servicio.descripcion}`,
+              }
+            }))
+          })
+
+          presu.dataValues.total = total
+          return { ...presu.dataValues, presupuesto_detalle }
+        }))
+      })
+
+      return presupuestos
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
