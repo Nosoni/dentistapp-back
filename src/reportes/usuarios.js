@@ -1,6 +1,6 @@
 const express = require('express');
 const definiciones = require('../constantes');
-const { reporteFacturas } = require('../controller/facturas');
+const { reporteUsuarios } = require('../controller/usuarios');
 const router = express.Router()
 
 const contenido = `
@@ -19,25 +19,16 @@ const contenido = `
     }   
 </style>
 <div>
-  <h1>Facturas clientes</h1>
+  <h1>Listado de usuarios</h1>
 
   <table>
     <thead>
       <tr>
         <th>
-            Documento
+            Usuario
         </th>
         <th>
-            Paciente
-        </th>
-        <th>
-            Comprobante
-        </th>
-        <th>
-            Fecha
-        </th>
-        <th>
-            Total
+            Funcionario
         </th>
       </tr>
     </thead>
@@ -45,11 +36,8 @@ const contenido = `
       {{#each datos}}
         {{#with this}}
           <tr>
-            <td>{{documento}}</td>
-            <td>{{paciente}}</td>
-            <td>{{comprobante}}</td>
-            <td>{{fecha}}</td>
-            <td>{{total}}</td>
+            <td>{{usuario}}</td>
+            <td>{{funcionario}}</td>
           </tr>
         {{/with}}    
       {{/each}}
@@ -64,16 +52,18 @@ async function filtrar(req, res) {
   const jsreport = req.app.get(definiciones.jsreport)
   let nombreArchivo = "prueba" + '-' + Date.now() + '.pdf';
 
-  const facturas = await reporteFacturas(req.body)
-  const tabla = facturas.map(factura => {
-    return {
-      documento: factura.paciente.documento,
-      paciente: `${factura.paciente.nombres}, ${factura.paciente.apellidos}`,
-      comprobante: factura.comprobante,
-      fecha: factura.fecha,
-      total: factura.total
+  const usuarios = await reporteUsuarios(req.body)
+
+  const tabla = usuarios.map(usuario => {
+    let new_usuario = {}
+    new_usuario.usuario = usuario.usuario
+    if (usuario.funcionario) {
+      new_usuario.funcionario = `${usuario.funcionario.apellidos}, ${usuario.funcionario.nombres}`
     }
+    return new_usuario
   })
+
+  console.log(tabla)
 
   try {
     await jsreport.render({

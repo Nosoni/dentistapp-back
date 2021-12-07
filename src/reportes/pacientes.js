@@ -1,6 +1,6 @@
 const express = require('express');
 const definiciones = require('../constantes');
-const { reporteFacturas } = require('../controller/facturas');
+const { reportePacientes } = require('../controller/pacientes');
 const router = express.Router()
 
 const contenido = `
@@ -19,7 +19,7 @@ const contenido = `
     }   
 </style>
 <div>
-  <h1>Facturas clientes</h1>
+  <h1>Listado de usuarios</h1>
 
   <table>
     <thead>
@@ -28,16 +28,19 @@ const contenido = `
             Documento
         </th>
         <th>
-            Paciente
+            Nombres
         </th>
         <th>
-            Comprobante
+            Apellidos
         </th>
         <th>
-            Fecha
+            Telefono
         </th>
         <th>
-            Total
+            Email
+        </th>
+        <th>
+            Dirección
         </th>
       </tr>
     </thead>
@@ -46,10 +49,11 @@ const contenido = `
         {{#with this}}
           <tr>
             <td>{{documento}}</td>
-            <td>{{paciente}}</td>
-            <td>{{comprobante}}</td>
-            <td>{{fecha}}</td>
-            <td>{{total}}</td>
+            <td>{{nombres}}</td>
+            <td>{{apellidos}}</td>
+            <td>{{telefono}}</td>
+            <td>{{email}}</td>
+            <td>{{ciudad}}  {{direccion}}</td>
           </tr>
         {{/with}}    
       {{/each}}
@@ -64,14 +68,17 @@ async function filtrar(req, res) {
   const jsreport = req.app.get(definiciones.jsreport)
   let nombreArchivo = "prueba" + '-' + Date.now() + '.pdf';
 
-  const facturas = await reporteFacturas(req.body)
-  const tabla = facturas.map(factura => {
+  const pacientes = await reportePacientes(req.body)
+
+  const tabla = pacientes.map(paciente => {
     return {
-      documento: factura.paciente.documento,
-      paciente: `${factura.paciente.nombres}, ${factura.paciente.apellidos}`,
-      comprobante: factura.comprobante,
-      fecha: factura.fecha,
-      total: factura.total
+      documento: paciente.documento,
+      nombres: paciente.nombres,
+      apellidos: paciente.apellidos,
+      telefono: paciente.telefono,
+      email: paciente.email,
+      ciudad: paciente.ciudad,
+      direccion: paciente.direccion
     }
   })
 

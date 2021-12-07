@@ -11,6 +11,7 @@ const get_paciente_historial = require("./pacientes_dientes_historial").get_paci
 const insert_paciente_historial = require("./pacientes_dientes_historial").insert_paciente_historial
 const { Op } = require("sequelize")
 const validarFecha = require("../helpers/index").validarFecha
+const objectHasValue = require("../helpers/index").objectHasValue
 
 module.exports = {
   async crear(req, res) {
@@ -199,5 +200,45 @@ module.exports = {
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
     }
-  }
+  },
+  async reportePacientes(filtro) {
+    try {
+      let pacientes_filtrados;
+
+      if (objectHasValue(filtro)) {
+        pacientes_filtrados = await pacienteModel.findAll({
+          where: {
+            [Op.and]: {
+              [Op.or]: {
+                documento: {
+                  [Op.substring]: filtro.paciente,
+                },
+                nombres: {
+                  [Op.substring]: filtro.paciente,
+                },
+                apellidos: {
+                  [Op.substring]: filtro.paciente,
+                },
+              },
+              activo: true
+            }
+          },
+          order: [
+            ['documento', 'ASC'],
+          ],
+        })
+      } else {
+        pacientes_filtrados = await pacienteModel.findAll({
+          where: { activo: true },
+          order: [
+            ['nombres', 'ASC'],
+          ],
+        });
+      }
+
+      return pacientes_filtrados
+    } catch (error) {
+      console.log(error)
+    }
+  },
 }

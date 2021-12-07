@@ -4,6 +4,7 @@ const { Op } = require("sequelize")
 const bcrypt = require("bcrypt")
 const definiciones = require('../constantes/index')
 const actualizarUsuariosRoles = require('./usuarios_roles').actualizarUsuariosRoles
+const objectHasValue = require("../helpers/index").objectHasValue
 
 module.exports = {
   async crear(req, res) {
@@ -173,6 +174,44 @@ module.exports = {
       return res.status(200).json({ datos: usuarioLista })
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
+    }
+  },
+  async reporteUsuarios(filtro) {
+    try {
+      let usuarios_filtrados;
+
+      if (objectHasValue(filtro)) {
+        usuarios_filtrados = await usuarioModel.findAll({
+          attributes: { exclude: ['password'] },
+          include: [{ model: funcionarioModel, as: "funcionario" }],
+          where: {
+            [Op.and]: {
+              usuario: {
+                [Op.substring]: filtro.usuario
+              },
+              activo: true
+            }
+          },
+          order: [
+            ['usuario', 'ASC'],
+          ],
+        })
+      } else {
+        usuarios_filtrados = await usuarioModel.findAll({
+          attributes: { exclude: ['password'] },
+          include: [{ model: funcionarioModel, as: "funcionario" }],
+          where: {
+            activo: true
+          },
+          order: [
+            ['usuario', 'ASC'],
+          ],
+        })
+      }
+
+      return usuarios_filtrados
+    } catch (error) {
+      console.log(error)
     }
   },
 }
