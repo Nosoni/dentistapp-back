@@ -1,4 +1,5 @@
 var insumosModel = require("../models/inicializar_modelos").insumos;
+var stockInsumoMovimientoModel = require("../models/inicializar_modelos").stock_insumos_movimientos;
 const { Op } = require("sequelize")
 
 module.exports = {
@@ -137,6 +138,39 @@ module.exports = {
       return res.status(200).json({ datos: insumos })
     } catch (error) {
       return res.status(500).send({ mensaje: error.message })
+    }
+  },
+
+  async stockBajo(req, res) {
+    try {
+      const sequelize = stockInsumoMovimientoModel.sequelize
+      const stock_bajo = await stockInsumoMovimientoModel.findAll({
+        include: {
+          model: insumosModel, as: "insumo",
+        },
+        attributes: ['insumo_id',
+          [sequelize.fn('sum', sequelize.col('cantidad')), 'stock']
+        ],
+        where: {
+          [Op.and]: {
+            activo: true,
+          }
+        },
+        group: ['insumo.id', 'insumo_id'],
+      })
+      const retornar = stock_bajo.map(stock => {
+        if (stock.dataValues.stock <= stock.insumo.cantidad_minima) {
+          return {
+            insumo_id: stock.insumo.id,
+            insumo: stock.insumo.nombre,
+            cantidad_minima: stock.insumo.cantidad_minima,
+            stock_actual: stock.dataValues.stock
+          }
+        }
+      })
+      return res.status(200).json({ mensaje: "Listado de stock bajo.", datos: retornar })
+    } catch (error) {
+      return res.status(500).json({ mensaje: error.message })
     }
   },
 }

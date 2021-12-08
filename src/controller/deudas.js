@@ -1,5 +1,5 @@
 const deudaModel = require("../models/inicializar_modelos").deudas;
-const deudaDetalleModel = require("../models/inicializar_modelos").deudas_detalle;
+const pacienteModel = require("../models/inicializar_modelos").pacientes;
 const facturaModel = require("../models/inicializar_modelos").facturas;
 const { Op } = require("sequelize")
 
@@ -33,5 +33,36 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({ mensaje: error.message })
     }
+  },
+  async reporteCuentas(filtro) {
+    try {
+      const { paciente_id } = filtro
+      const deudas = await deudaModel.findAll({
+        include: {
+          model: facturaModel, as: "factura", where: { activo: true, paciente_id },
+          include: { model: pacienteModel, as: "paciente", where: { activo: true } },
+        },
+        where: {
+          [Op.and]: {
+            activo: true,
+            debe: { [Op.gt]: deudaModel.sequelize.literal('haber') },
+          }
+        }
+      })
+
+      const retornar = deudas.map(deuda => {
+        return {
+          deuda_id: deuda.id,
+          factura_id: deuda.factura_id,
+          factura_comprobante: deuda.factura.comprobante,
+          debe: deuda.debe,
+          haber: deuda.haber,
+          monto: deuda.debe - deuda.haber,
+          paciente_id: deuda.factura.paciente_id
+        }
+      })
+
+      return deudas
+    } catch (error) { console.log(error) }
   }
 }
