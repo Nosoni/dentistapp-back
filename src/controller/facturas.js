@@ -15,7 +15,7 @@ module.exports = {
     try {
       const { cabecera, detalle } = req.body;
 
-      if (!cabecera || detalle.detalle.length == 0) {
+      if (!cabecera || detalle.length == 0) {
         return res.status(500).json({ mensaje: 'La factura no cuenta con todos los campos. Favor verificar.' })
       }
 
