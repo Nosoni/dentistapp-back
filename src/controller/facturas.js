@@ -19,6 +19,19 @@ module.exports = {
         return res.status(500).json({ mensaje: 'La factura no cuenta con todos los campos. Favor verificar.' })
       }
 
+      const existe = await facturaModel.findOne({
+        where: {
+          [Op.and]: {
+            comprobante: cabecera.comprobante,
+            activo: true
+          }
+        }
+      })
+
+      if (existe) {
+        return res.status(500).send({ mensaje: "Ya existe una factura con dicho comprobante." })
+      }
+
       const estado_inicial = await getEstadoInicialTabla('facturas')
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {
