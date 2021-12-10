@@ -18,6 +18,19 @@ module.exports = {
         return res.status(500).json({ mensaje: 'La cobranza no cuenta con todos los campos. Favor verificar.' })
       }
 
+      const existe = await cobranzaModel.findOne({
+        where: {
+          [Op.and]: {
+            comprobante: cabecera.comprobante,
+            activo: true
+          }
+        }
+      })
+
+      if (existe) {
+        return res.status(500).send({ mensaje: "Ya existe una cobranza con dicho comprobante." })
+      }
+
       const estado_inicial = await getEstadoInicialTabla('cobranzas')
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {

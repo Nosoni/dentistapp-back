@@ -17,6 +17,19 @@ module.exports = {
         return res.status(500).json({ mensaje: 'La actualización de stock cuenta con todos los campos. Favor verificar.' })
       }
 
+      const existe = await stockActualizarModel.findOne({
+        where: {
+          [Op.and]: {
+            comprobante: cabecera.comprobante,
+            activo: true
+          }
+        }
+      })
+
+      if (existe) {
+        return res.status(500).send({ mensaje: "Ya existe un presupuesto con dicho comprobante." })
+      }
+
       const estado_inicial = await getEstadoInicialTabla('actualizar_stock')
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {
