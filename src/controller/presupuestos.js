@@ -17,19 +17,6 @@ module.exports = {
         return res.status(500).json({ mensaje: 'El presupuesto no cuenta con todos los campos. Favor verificar.' })
       }
 
-      const existe = await presupuestoModel.findOne({
-        where: {
-          [Op.and]: {
-            comprobante: cabecera.comprobante,
-            activo: true
-          }
-        }
-      })
-
-      if (existe) {
-        return res.status(500).send({ mensaje: "Ya existe un presupuesto con dicho comprobante." })
-      }
-
       const estado_inicial = await getEstadoInicialTabla('presupuestos')
       const estado_movimiento = await estadoMovimientoModel.findOne({
         where: {
