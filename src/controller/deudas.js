@@ -37,18 +37,34 @@ module.exports = {
   async reporteCuentas(filtro) {
     try {
       const { paciente_id } = filtro
-      const deudas = await deudaModel.findAll({
-        include: {
-          model: facturaModel, as: "factura", where: { activo: true, paciente_id },
-          include: { model: pacienteModel, as: "paciente", where: { activo: true } },
-        },
-        where: {
-          [Op.and]: {
-            activo: true,
-            debe: { [Op.gt]: deudaModel.sequelize.literal('haber') },
+      let deudas;
+      if (paciente_id) {
+        deudas = await deudaModel.findAll({
+          include: {
+            model: facturaModel, as: "factura", where: { activo: true, paciente_id },
+            include: { model: pacienteModel, as: "paciente", where: { activo: true } },
+          },
+          where: {
+            [Op.and]: {
+              activo: true,
+              debe: { [Op.gt]: deudaModel.sequelize.literal('haber') },
+            }
           }
-        }
-      })
+        })
+      } else {
+        deudas = await deudaModel.findAll({
+          include: {
+            model: facturaModel, as: "factura", where: { activo: true },
+            include: { model: pacienteModel, as: "paciente", where: { activo: true } },
+          },
+          where: {
+            [Op.and]: {
+              activo: true,
+              debe: { [Op.gt]: deudaModel.sequelize.literal('haber') },
+            }
+          }
+        })
+      }
 
       const retornar = deudas.map(deuda => {
         return {
