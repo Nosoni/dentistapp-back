@@ -6,7 +6,17 @@ const definiciones = require('./src/constantes/index')
 const privadas = require("./src/routes/index")
 const publicas = require('./src/routes/publicas')
 const cors = require('cors')
-let jsreport = require('jsreport-core')();
+let jsreport = require('jsreport-core')({
+  "extensions": {
+    "chrome-pdf": {
+      "launchOptions": {
+        "args": [
+          "--no-sandbox"
+        ]
+      }
+    }
+  }
+});
 jsreport.use(require('jsreport-handlebars')());
 jsreport.use(require('jsreport-chrome-pdf')());
 jsreport.init();
