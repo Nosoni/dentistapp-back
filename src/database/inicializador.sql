@@ -40,7 +40,10 @@ INSERT INTO public.roles_permisos (rol_id,permiso_id,activo) VALUES
 	 (1,9,true),
 	 (1,10,true),
 	 (1,11,true),
-	 (1,12,true);
+	 (1,12,true),
+	 (1,13,true),
+	 (1,14,true),
+	 (1,15,true);
 
 INSERT INTO public.usuarios_roles (usuario_id,rol_id,activo) VALUES
 	 (1,1,true);

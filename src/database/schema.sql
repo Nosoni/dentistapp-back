@@ -243,8 +243,7 @@ COMMENT ON COLUMN public.pacientes_dientes.activo IS 'Indica si el diente del pa
 
 CREATE TABLE public.pacientes_dientes_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	paciente_id int4 NOT NULL, -- Campo que hace referencia al paciente
-	paciente_diente_id int4 NULL, -- Campo que hace referencia al diente del paciente
+	paciente_diente_id int4 NOT NULL, -- Campo que hace referencia al diente del paciente
 	estado_detalle_id int2 NOT NULL, -- Campo que hace referencia al estado del detalle del diente
 	cara int2 NOT NULL, -- Indica el número de cara que corresponde el detalle
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle del diente está o no activo
@@ -262,17 +261,20 @@ COMMENT ON COLUMN public.pacientes_dientes_detalle.activo IS 'Indica si el detal
 
 CREATE TABLE public.pacientes_dientes_historial (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	paciente_diente_id int4 NOT NULL, -- Campo que hace referencia al diente del paciente
+	paciente_id int4 NOT NULL, -- Campo que hace referencia al paciente
+	paciente_diente_id int4 NULL, -- Campo que hace referencia al diente del paciente
 	tratamiento_servicio_id int2 NOT NULL, -- Campo que hace referencia al tratamiento o servicio hecho o pendiente de realizar
 	estado_historial_id int2 NOT NULL, -- Campo que hace referencia al estado del historial del diente
 	activo bool NOT NULL DEFAULT true, -- Indica si el historia del diente está o no activo
 	CONSTRAINT paciente_diente_historial_pk PRIMARY KEY (id),
 	CONSTRAINT pacientes_dientes_historial_fk_estado FOREIGN KEY (estado_historial_id) REFERENCES estados_movimientos(id),
+	CONSTRAINT pacientes_dientes_historial_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
 	CONSTRAINT pacientes_dientes_historial_fk_paciente_diente FOREIGN KEY (paciente_diente_id) REFERENCES pacientes_dientes(id),
 	CONSTRAINT pacientes_dientes_historial_fk_tratamiento_servicio FOREIGN KEY (tratamiento_servicio_id) REFERENCES tratamientos_servicios(id)
 );
 COMMENT ON TABLE public.pacientes_dientes_historial IS 'Representa al historial de tratamientos que ha recibido el diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.pacientes_dientes_historial.paciente_id IS 'Campo que hace referencia al paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.paciente_diente_id IS 'Campo que hace referencia al diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.tratamiento_servicio_id IS 'Campo que hace referencia al tratamiento o servicio hecho o pendiente de realizar';
 COMMENT ON COLUMN public.pacientes_dientes_historial.estado_historial_id IS 'Campo que hace referencia al estado del historial del diente';
@@ -299,7 +301,7 @@ CREATE TABLE public.presupuestos_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	presupuesto_id int2 NOT NULL, -- Campo que hace referencia al presupuesto
 	paciente_diente_historial_id int2 NOT NULL, -- Campo que hace referencia al historial médico a presupuestar
-	precio int2 NOT NULL, -- Precio del tratamiento
+	precio int4 NOT NULL, -- Precio del tratamiento
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle del presupuesto está o no activo
 	CONSTRAINT presupuesto_detalle_chk CHECK ((precio > 0)),
 	CONSTRAINT presupuesto_detalle_pk PRIMARY KEY (id),
@@ -491,7 +493,7 @@ CREATE TABLE public.facturas_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	factura_id int2 NOT NULL, -- Campo que hace referencia a la factura
 	paciente_diente_historial_id int2 NOT NULL, -- Campo que hace referencia al historial médico a facturar
-	precio int2 NOT NULL, -- Precio del tratamiento
+	precio int4 NOT NULL, -- Precio del tratamiento
 	impuesto_id int2 NOT NULL, -- Campo que hace referencia al impuesto
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle está o no activo
 	CONSTRAINT factura_detalle_chk CHECK ((precio > 0)),
@@ -593,7 +595,7 @@ CREATE TABLE public.stock_insumos_movimientos (
 	cantidad int2 NOT NULL, -- Cantidad del movimiento
 	fecha_insercion timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha en la que se realizó la inserción del movimiento
 	fecha_movimiento date NOT NULL, -- Fecha del movimiento
-	usuario_id int2 NOT NULL, -- Campo que hace referencia al usuario que realizó la actualización
+	usuario_id int2 NULL, -- Campo que hace referencia al usuario que realizó la actualización
 	activo bool NOT NULL DEFAULT true, -- Indica si el movimiento está o no activo
 	CONSTRAINT stock_insumo_movimiento_pk PRIMARY KEY (id),
 	CONSTRAINT stock_insumos_movimientos_fk_insumo FOREIGN KEY (insumo_id) REFERENCES insumos(id),
@@ -618,8 +620,8 @@ CREATE TABLE public.deudas (
 	fecha_insercion timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha en la que se realizó la inserción de la deuda
 	fecha_vencimiento date NOT NULL, -- Fecha de vencimiento de la deuda
 	cuota_numero int2 NOT NULL, -- Cuota número de la deuda
-	debe int2 NOT NULL, -- Monto del debe
-	haber int2 NOT NULL, -- Monto del haber
+	debe int4 NOT NULL, -- Monto del debe
+	haber int4 NOT NULL, -- Monto del haber
 	activo bool NOT NULL DEFAULT true, -- Indica si la cita médica está o no activa
 	CONSTRAINT deuda_pk PRIMARY KEY (id),
 	CONSTRAINT deudas_fk_factura FOREIGN KEY (factura_id) REFERENCES facturas(id)
@@ -638,7 +640,7 @@ CREATE TABLE public.cobranzas_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	cobranza_id int2 NOT NULL, -- Campo que hace referencia a la cobranza
 	deuda_id int2 NOT NULL, -- Campo que hace referencia a una deuda
-	monto int2 NOT NULL, -- Monto de pago
+	monto int4 NOT NULL, -- Monto de pago
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle de la cobranza está o no activo
 	CONSTRAINT cobranza_detalle_chk CHECK ((monto > 0)),
 	CONSTRAINT cobranza_detalle_pk PRIMARY KEY (id),
@@ -656,9 +658,9 @@ CREATE TABLE public.deudas_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	deuda_id int2 NOT NULL, -- Campo que hace referencia a la deuda
 	fecha_insercion timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha de inserción del detalle de la deuda
-	cobranza_detalle_id int4 NOT NULL, -- Campo que hace referencia al detalle de la cobranza
-	debe int2 NOT NULL, -- Monto del debe
-	haber int2 NOT NULL, -- Monto del haber
+	cobranza_detalle_id int2 NOT NULL, -- Campo que hace referencia al detalle de la cobranza
+	debe int4 NOT NULL, -- Monto del debe
+	haber int4 NOT NULL, -- Monto del haber
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle de la deuda está o no activo
 	CONSTRAINT deuda_detalle_pk PRIMARY KEY (id),
 	CONSTRAINT deudas_detalle_fk_cobranza FOREIGN KEY (cobranza_detalle_id) REFERENCES cobranzas_detalle(id),
