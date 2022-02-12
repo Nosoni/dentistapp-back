@@ -572,7 +572,7 @@ COMMENT ON COLUMN public.fichas_medicas.activo IS 'Indica si la ficha médica es
 CREATE TABLE public.log_cambios (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	anterior json NOT NULL, -- Valor anterior al cambio
-	posterior json NOT NULL,
+	posterior json NOT NULL, -- Valor posterior al cambio
 	tabla_id varchar NOT NULL, -- Nombre de la tabla que realiza el cambio
 	registro_id int2 NOT NULL, -- Id del registro que realiza el cambio
 	usuario_id int2 NOT NULL, -- Campo que representa al usuario que realizó el cambio
@@ -581,6 +581,7 @@ CREATE TABLE public.log_cambios (
 	CONSTRAINT log_cambios_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 COMMENT ON COLUMN public.log_cambios.anterior IS 'Valor anterior al cambio';
+COMMENT ON COLUMN public.log_cambios.posterior IS 'Valor posterior al cambio';
 COMMENT ON COLUMN public.log_cambios.tabla_id IS 'Nombre de la tabla que realiza el cambio';
 COMMENT ON COLUMN public.log_cambios.registro_id IS 'Id del registro que realiza el cambio';
 COMMENT ON COLUMN public.log_cambios.usuario_id IS 'Campo que representa al usuario que realizó el cambio';
