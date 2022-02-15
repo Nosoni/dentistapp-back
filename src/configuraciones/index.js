@@ -19,7 +19,8 @@ const env = {
         timestamps: false
       },
     }
-  }
+  },
+  storageBucket: process.env.BUCKET_URL
 }
 
 if (process.env.SSL === 'true') {

@@ -21,7 +21,21 @@ jsreport.use(require('jsreport-handlebars')());
 jsreport.use(require('jsreport-chrome-pdf')());
 jsreport.init();
 
+
+
+const multer = require('multer')
+const upload = multer({ storage: multer.memoryStorage() })
+
+var admin = require("firebase-admin");
+var serviceAccount = require("./src/configuraciones/serviceAccountKey.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: config.storageBucket
+});
+
+
 const app = express()
+app.locals.bucket = admin.storage().bucket()
 console.log(config.env);
 
 //settings
@@ -38,6 +52,24 @@ app.use(morgan("dev"))//TODO, DELETED
 app.use(publicas)
 app.get('/', (req, res) => {
   res.send('Hello World!')
+})
+app.post('/upload', upload.single('file'), async (req, res) => {
+  try {
+    const fileName = req.file.originalname
+    const file = app.locals.bucket.file(fileName)
+    await file.createWriteStream().end(req.file.buffer)
+    const url = await file.getSignedUrl({
+      action: 'read',
+      expires: '03-09-2491'
+    }).then(signedUrls => {
+      // signedUrls[0] contains the file's public URL
+      return signedUrls[0]
+    });
+    console.log(url)
+    res.send(url)
+  } catch (error) {
+    res.send('error')
+  }
 })
 app.use(privadas)
 
