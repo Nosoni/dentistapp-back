@@ -29,7 +29,7 @@ class fichas_medicas extends Sequelize.Model {
       defaultValue: false,
       comment: "Indica si está siendo atendido por otro médico"
     },
-    otro_medico_obsevacion: {
+    otro_medico_observacion: {
       type: DataTypes.STRING(150),
       allowNull: true,
       comment: "Observación en caso de ser atendido por otro médico"

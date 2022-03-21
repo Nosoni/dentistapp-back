@@ -33,15 +33,6 @@ class citas_medicas extends Sequelize.Model {
       allowNull: false,
       comment: "Fecha fin de la cita médica"
     },
-    usuario_id: {
-      type: DataTypes.SMALLINT,
-      allowNull: false,
-      comment: "Campo que hace referencia a un usuario",
-      references: {
-        model: 'usuarios',
-        key: 'id'
-      }
-    },
     estado_cita_id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
@@ -51,6 +42,11 @@ class citas_medicas extends Sequelize.Model {
         key: 'id'
       }
     },
+    observacion: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      comment: "Campo de observación de la reserva"
+    },
     activo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -58,6 +54,28 @@ class citas_medicas extends Sequelize.Model {
       comment: "Indica si la cita médica está o no activa"
     }
   }, {
+    hooks: {
+      afterCreate: async (model, options) => {
+        const logCambiosModel = model.sequelize.models.log_cambios
+        await logCambiosModel.create({
+          anterior: "Registro nuevo.",
+          posterior: model,
+          tabla_id: 'citas_medicas',
+          registro_id: model.dataValues.id,
+          usuario_id: options.user_login_id
+        })
+      },
+      afterUpdate: async (model, options) => {
+        const logCambiosModel = model.sequelize.models.log_cambios
+        await logCambiosModel.create({
+          anterior: model._previousDataValues,
+          posterior: model,
+          tabla_id: 'citas_medicas',
+          registro_id: model.dataValues.id,
+          usuario_id: options.user_login_id
+        })
+      }
+    },
     sequelize,
     tableName: 'citas_medicas',
     schema: 'public',

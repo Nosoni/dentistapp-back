@@ -15,7 +15,7 @@ class dientes extends Sequelize.Model {
       primaryKey: true
     },
     codigo: {
-      type: DataTypes.STRING(5),
+      type: DataTypes.SMALLINT,
       allowNull: false,
       comment: "Código del diente"
     },

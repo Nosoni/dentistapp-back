@@ -59,7 +59,7 @@ class stock_insumos_movimientos extends Sequelize.Model {
     },
     usuario_id: {
       type: DataTypes.SMALLINT,
-      allowNull: false,
+      allowNull: true,
       comment: "Campo que hace referencia al usuario que realizó la actualización",
       references: {
         model: 'usuarios',

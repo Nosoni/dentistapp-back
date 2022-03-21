@@ -33,7 +33,7 @@ class presupuestos_detalle extends Sequelize.Model {
       }
     },
     precio: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: "Precio del tratamiento"
     },

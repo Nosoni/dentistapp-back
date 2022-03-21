@@ -1,3 +1,4 @@
+--TABLES
 CREATE TABLE public.condiciones_pago (
 	id int2 NOT NULL, -- Código identificador autogenerado
 	codigo varchar(15) NOT NULL,
@@ -15,7 +16,7 @@ COMMENT ON COLUMN public.condiciones_pago.activo IS 'Indica si la condición de 
 
 CREATE TABLE public.dientes (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	codigo varchar(5) NOT NULL, -- Código del diente
+	codigo int2 NOT NULL, -- Código del diente
 	temporal bool NOT NULL DEFAULT false, -- Determina si el diente es uno temporal
 	cantidad_caras int2 NOT NULL, -- Determina la cantidad de caras del diente
 	activo bool NOT NULL DEFAULT true, -- Indica si el diente está o no activo
@@ -150,8 +151,8 @@ COMMENT ON COLUMN public.especialidades.activo IS 'Indica si la especialidad est
 
 CREATE TABLE public.estados_movimientos (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	tabla_id varchar(20) NOT NULL, -- Nombre de la tabla
-	estado_actual varchar(10) NOT NULL, -- Estado actual del proceso
+	tabla_id varchar(50) NOT NULL, -- Nombre de la tabla
+	estado_actual varchar(20) NOT NULL, -- Estado actual del proceso
 	estado_anterior_id int2 NULL, -- Campo que hace referencia al estado anterior
 	puede_avanzar bool NOT NULL DEFAULT true, -- Campo que indica si puede avanzar el proceso al siguiente estado
 	activo bool NOT NULL DEFAULT true, -- Indica si el estado del movimiento está o no activo
@@ -226,7 +227,7 @@ CREATE TABLE public.pacientes_dientes (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	paciente_id int2 NOT NULL, -- Campo que hace referencia a un paciente
 	diente_id int2 NOT NULL, -- Campo que hace referencia a un diente
-	estado_diente_id int2 NOT NULL, -- Campo que hace referencia al estado del diente
+	estado_diente_id int2 NULL, -- Campo que hace referencia al estado del diente
 	activo bool NOT NULL DEFAULT true, -- Indica si el diente del paciente está o no activo
 	CONSTRAINT paciente_diente_pk PRIMARY KEY (id),
 	CONSTRAINT pacientes_dientes_fk_diente FOREIGN KEY (diente_id) REFERENCES dientes(id),
@@ -235,7 +236,6 @@ CREATE TABLE public.pacientes_dientes (
 );
 COMMENT ON TABLE public.pacientes_dientes IS 'Representa a los dientes del paciente';
 COMMENT ON COLUMN public.pacientes_dientes.id IS 'Código identificador autogenerado';
-COMMENT ON COLUMN public.pacientes_dientes.paciente_id IS 'Campo que hace referencia a un paciente';
 COMMENT ON COLUMN public.pacientes_dientes.diente_id IS 'Campo que hace referencia a un diente';
 COMMENT ON COLUMN public.pacientes_dientes.estado_diente_id IS 'Campo que hace referencia al estado del diente';
 COMMENT ON COLUMN public.pacientes_dientes.activo IS 'Indica si el diente del paciente está o no activo';
@@ -252,6 +252,7 @@ CREATE TABLE public.pacientes_dientes_detalle (
 );
 COMMENT ON TABLE public.pacientes_dientes_detalle IS 'Representa el detalle del diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.pacientes_dientes_detalle.paciente_id IS 'Campo que hace referencia al paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.paciente_diente_id IS 'Campo que hace referencia al diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.estado_detalle_id IS 'Campo que hace referencia al estado del detalle del diente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.cara IS 'Indica el número de cara que corresponde el detalle';
@@ -259,17 +260,20 @@ COMMENT ON COLUMN public.pacientes_dientes_detalle.activo IS 'Indica si el detal
 
 CREATE TABLE public.pacientes_dientes_historial (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	paciente_diente_id int4 NOT NULL, -- Campo que hace referencia al diente del paciente
+	paciente_id int4 NOT NULL, -- Campo que hace referencia al paciente
+	paciente_diente_id int4 NULL, -- Campo que hace referencia al diente del paciente
 	tratamiento_servicio_id int2 NOT NULL, -- Campo que hace referencia al tratamiento o servicio hecho o pendiente de realizar
 	estado_historial_id int2 NOT NULL, -- Campo que hace referencia al estado del historial del diente
 	activo bool NOT NULL DEFAULT true, -- Indica si el historia del diente está o no activo
 	CONSTRAINT paciente_diente_historial_pk PRIMARY KEY (id),
 	CONSTRAINT pacientes_dientes_historial_fk_estado FOREIGN KEY (estado_historial_id) REFERENCES estados_movimientos(id),
+	CONSTRAINT pacientes_dientes_historial_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
 	CONSTRAINT pacientes_dientes_historial_fk_paciente_diente FOREIGN KEY (paciente_diente_id) REFERENCES pacientes_dientes(id),
 	CONSTRAINT pacientes_dientes_historial_fk_tratamiento_servicio FOREIGN KEY (tratamiento_servicio_id) REFERENCES tratamientos_servicios(id)
 );
 COMMENT ON TABLE public.pacientes_dientes_historial IS 'Representa al historial de tratamientos que ha recibido el diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.pacientes_dientes_historial.paciente_id IS 'Campo que hace referencia al paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.paciente_diente_id IS 'Campo que hace referencia al diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.tratamiento_servicio_id IS 'Campo que hace referencia al tratamiento o servicio hecho o pendiente de realizar';
 COMMENT ON COLUMN public.pacientes_dientes_historial.estado_historial_id IS 'Campo que hace referencia al estado del historial del diente';
@@ -296,7 +300,7 @@ CREATE TABLE public.presupuestos_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	presupuesto_id int2 NOT NULL, -- Campo que hace referencia al presupuesto
 	paciente_diente_historial_id int2 NOT NULL, -- Campo que hace referencia al historial médico a presupuestar
-	precio int2 NOT NULL, -- Precio del tratamiento
+	precio int4 NOT NULL, -- Precio del tratamiento
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle del presupuesto está o no activo
 	CONSTRAINT presupuesto_detalle_chk CHECK ((precio > 0)),
 	CONSTRAINT presupuesto_detalle_pk PRIMARY KEY (id),
@@ -398,21 +402,20 @@ CREATE TABLE public.citas_medicas (
 	paciente_id int2 NOT NULL, -- Campo que hace referencia a un paciente
 	fecha_inicio timestamp(0) NOT NULL, -- Fecha de inicio de la cita médica
 	fecha_fin timestamp(0) NOT NULL, -- Fecha fin de la cita médica
-	usuario_id int2 NOT NULL, -- Campo que hace referencia a un usuario
 	estado_cita_id int2 NOT NULL, -- Campo que hace referencia al estado de la cita médica
+	observacion varchar(50) NULL, -- Campo de observación de la reserva
 	activo bool NOT NULL DEFAULT true, -- Indica si la cita médica está o no activa
 	CONSTRAINT cita_medica_pk PRIMARY KEY (id),
 	CONSTRAINT citas_medicas_fk_estado FOREIGN KEY (estado_cita_id) REFERENCES estados_movimientos(id),
-	CONSTRAINT citas_medicas_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
-	CONSTRAINT citas_medicas_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+	CONSTRAINT citas_medicas_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
 );
 COMMENT ON TABLE public.citas_medicas IS 'Representa a las citas médicas del consultorio';
 COMMENT ON COLUMN public.citas_medicas.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.citas_medicas.paciente_id IS 'Campo que hace referencia a un paciente';
 COMMENT ON COLUMN public.citas_medicas.fecha_inicio IS 'Fecha de inicio de la cita médica';
 COMMENT ON COLUMN public.citas_medicas.fecha_fin IS 'Fecha fin de la cita médica';
-COMMENT ON COLUMN public.citas_medicas.usuario_id IS 'Campo que hace referencia a un usuario';
 COMMENT ON COLUMN public.citas_medicas.estado_cita_id IS 'Campo que hace referencia al estado de la cita médica';
+COMMENT ON COLUMN public.citas_medicas.observacion IS 'Campo de observación de la reserva';
 COMMENT ON COLUMN public.citas_medicas.activo IS 'Indica si la cita médica está o no activa';
 
 CREATE TABLE public.cobranzas (
@@ -489,7 +492,7 @@ CREATE TABLE public.facturas_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	factura_id int2 NOT NULL, -- Campo que hace referencia a la factura
 	paciente_diente_historial_id int2 NOT NULL, -- Campo que hace referencia al historial médico a facturar
-	precio int2 NOT NULL, -- Precio del tratamiento
+	precio int4 NOT NULL, -- Precio del tratamiento
 	impuesto_id int2 NOT NULL, -- Campo que hace referencia al impuesto
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle está o no activo
 	CONSTRAINT factura_detalle_chk CHECK ((precio > 0)),
@@ -510,7 +513,7 @@ CREATE TABLE public.fichas_medicas (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	paciente_id int2 NOT NULL, -- Campo que hace referencia a un paciente
 	otro_medico bool NOT NULL DEFAULT false, -- Indica si está siendo atendido por otro médico
-	otro_medico_obsevacion varchar(150) NULL, -- Observación en caso de ser atendido por otro médico
+	otro_medico_observacion varchar(150) NULL, -- Observación en caso de ser atendido por otro médico
 	psiquiatra bool NOT NULL DEFAULT false, -- Indica si es atendido por un psiquiatra
 	medicamento bool NOT NULL DEFAULT false, -- Indica si está consumiendo algún medicamento
 	medicamento_json json NULL, -- Listado de medicamentos
@@ -541,7 +544,7 @@ COMMENT ON TABLE public.fichas_medicas IS 'Representa la ficha médica del pacie
 COMMENT ON COLUMN public.fichas_medicas.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.fichas_medicas.paciente_id IS 'Campo que hace referencia a un paciente';
 COMMENT ON COLUMN public.fichas_medicas.otro_medico IS 'Indica si está siendo atendido por otro médico';
-COMMENT ON COLUMN public.fichas_medicas.otro_medico_obsevacion IS 'Observación en caso de ser atendido por otro médico';
+COMMENT ON COLUMN public.fichas_medicas.otro_medico_observacion IS 'Observación en caso de ser atendido por otro médico';
 COMMENT ON COLUMN public.fichas_medicas.psiquiatra IS 'Indica si es atendido por un psiquiatra';
 COMMENT ON COLUMN public.fichas_medicas.medicamento IS 'Indica si está consumiendo algún medicamento';
 COMMENT ON COLUMN public.fichas_medicas.medicamento_json IS 'Listado de medicamentos';
@@ -566,6 +569,24 @@ COMMENT ON COLUMN public.fichas_medicas.otra_enfermedad_trastorno IS 'Indica si 
 COMMENT ON COLUMN public.fichas_medicas.otra_enfermedad_trastornos_observacion IS 'Observación en caso de padecer alguna enfermedad o trastornos no listados';
 COMMENT ON COLUMN public.fichas_medicas.activo IS 'Indica si la ficha médica está o no activa';
 
+CREATE TABLE public.log_cambios (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	anterior json NOT NULL, -- Valor anterior al cambio
+	posterior json NOT NULL, -- Valor posterior al cambio
+	tabla_id varchar NOT NULL, -- Nombre de la tabla que realiza el cambio
+	registro_id int2 NOT NULL, -- Id del registro que realiza el cambio
+	usuario_id int2 NOT NULL, -- Campo que representa al usuario que realizó el cambio
+	fecha timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora del cambio
+	CONSTRAINT log_cambios_pk PRIMARY KEY (id),
+	CONSTRAINT log_cambios_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+COMMENT ON COLUMN public.log_cambios.anterior IS 'Valor anterior al cambio';
+COMMENT ON COLUMN public.log_cambios.posterior IS 'Valor posterior al cambio';
+COMMENT ON COLUMN public.log_cambios.tabla_id IS 'Nombre de la tabla que realiza el cambio';
+COMMENT ON COLUMN public.log_cambios.registro_id IS 'Id del registro que realiza el cambio';
+COMMENT ON COLUMN public.log_cambios.usuario_id IS 'Campo que representa al usuario que realizó el cambio';
+COMMENT ON COLUMN public.log_cambios.fecha IS 'Fecha y hora del cambio';
+
 CREATE TABLE public.stock_insumos_movimientos (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	insumo_id int2 NOT NULL, -- Campo que hace referencia a un insumo
@@ -574,7 +595,7 @@ CREATE TABLE public.stock_insumos_movimientos (
 	cantidad int2 NOT NULL, -- Cantidad del movimiento
 	fecha_insercion timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha en la que se realizó la inserción del movimiento
 	fecha_movimiento date NOT NULL, -- Fecha del movimiento
-	usuario_id int2 NOT NULL, -- Campo que hace referencia al usuario que realizó la actualización
+	usuario_id int2 NULL, -- Campo que hace referencia al usuario que realizó la actualización
 	activo bool NOT NULL DEFAULT true, -- Indica si el movimiento está o no activo
 	CONSTRAINT stock_insumo_movimiento_pk PRIMARY KEY (id),
 	CONSTRAINT stock_insumos_movimientos_fk_insumo FOREIGN KEY (insumo_id) REFERENCES insumos(id),
@@ -599,8 +620,8 @@ CREATE TABLE public.deudas (
 	fecha_insercion timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha en la que se realizó la inserción de la deuda
 	fecha_vencimiento date NOT NULL, -- Fecha de vencimiento de la deuda
 	cuota_numero int2 NOT NULL, -- Cuota número de la deuda
-	debe int2 NOT NULL, -- Monto del debe
-	haber int2 NOT NULL, -- Monto del haber
+	debe int4 NOT NULL, -- Monto del debe
+	haber int4 NOT NULL, -- Monto del haber
 	activo bool NOT NULL DEFAULT true, -- Indica si la cita médica está o no activa
 	CONSTRAINT deuda_pk PRIMARY KEY (id),
 	CONSTRAINT deudas_fk_factura FOREIGN KEY (factura_id) REFERENCES facturas(id)
@@ -619,14 +640,14 @@ CREATE TABLE public.cobranzas_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	cobranza_id int2 NOT NULL, -- Campo que hace referencia a la cobranza
 	deuda_id int2 NOT NULL, -- Campo que hace referencia a una deuda
-	monto int2 NOT NULL, -- Monto de pago
+	monto int4 NOT NULL, -- Monto de pago
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle de la cobranza está o no activo
 	CONSTRAINT cobranza_detalle_chk CHECK ((monto > 0)),
 	CONSTRAINT cobranza_detalle_pk PRIMARY KEY (id),
 	CONSTRAINT cobranzas_detalle_fk FOREIGN KEY (deuda_id) REFERENCES deudas(id),
 	CONSTRAINT cobranzas_detalle_fk_cobranza FOREIGN KEY (cobranza_id) REFERENCES cobranzas(id)
 );
-COMMENT ON TABLE public.cobranzas_detalle IS 'Representa el detalle de la cobranza';
+COMMENT ON TABLE public.cobranzas_detalle IS 'Representa al detalle de la cobranza';
 COMMENT ON COLUMN public.cobranzas_detalle.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.cobranzas_detalle.cobranza_id IS 'Campo que hace referencia a la cobranza';
 COMMENT ON COLUMN public.cobranzas_detalle.deuda_id IS 'Campo que hace referencia a una deuda';
@@ -637,9 +658,9 @@ CREATE TABLE public.deudas_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	deuda_id int2 NOT NULL, -- Campo que hace referencia a la deuda
 	fecha_insercion timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha de inserción del detalle de la deuda
-	cobranza_detalle_id int4 NOT NULL, -- Campo que hace referencia al detalle de la cobranza
-	debe int2 NOT NULL, -- Monto del debe
-	haber int2 NOT NULL, -- Monto del haber
+	cobranza_detalle_id int2 NOT NULL, -- Campo que hace referencia al detalle de la cobranza
+	debe int4 NOT NULL, -- Monto del debe
+	haber int4 NOT NULL, -- Monto del haber
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle de la deuda está o no activo
 	CONSTRAINT deuda_detalle_pk PRIMARY KEY (id),
 	CONSTRAINT deudas_detalle_fk_cobranza FOREIGN KEY (cobranza_detalle_id) REFERENCES cobranzas_detalle(id),
@@ -653,3 +674,20 @@ COMMENT ON COLUMN public.deudas_detalle.cobranza_detalle_id IS 'Campo que hace r
 COMMENT ON COLUMN public.deudas_detalle.debe IS 'Monto del debe';
 COMMENT ON COLUMN public.deudas_detalle.haber IS 'Monto del haber';
 COMMENT ON COLUMN public.deudas_detalle.activo IS 'Indica si el detalle de la deuda está o no activo';
+
+--VIEWS
+CREATE OR REPLACE VIEW public.citas_medicas_view
+AS SELECT cm.id AS cita_medica_id,
+    cm.paciente_id,
+    (p.nombres::text || ' '::text) || p.apellidos::text AS paciente,
+    cm.fecha_inicio,
+    cm.fecha_fin,
+    cm.estado_cita_id,
+    em.estado_actual,
+    em.puede_avanzar,
+    cm.observacion,
+    cm.activo
+   FROM citas_medicas cm
+     JOIN pacientes p ON cm.paciente_id = p.id
+     JOIN estados_movimientos em ON cm.estado_cita_id = em.id
+  WHERE cm.activo = true AND p.activo = true AND em.activo = true;

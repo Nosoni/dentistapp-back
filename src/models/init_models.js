@@ -1,5 +1,6 @@
 var DataTypes = require("sequelize").DataTypes;
 var _citas_medicas = require("./citas_medicas");
+var _citas_medicas_view = require("./citas_medicas_view");
 var _cobranzas = require("./cobranzas");
 var _cobranzas_detalle = require("./cobranzas_detalle");
 var _condiciones_pago = require("./condiciones_pago");
@@ -16,6 +17,7 @@ var _fichas_medicas = require("./fichas_medicas");
 var _funcionarios = require("./funcionarios");
 var _impuestos = require("./impuestos");
 var _insumos = require("./insumos");
+var _log_cambios = require("./log_cambios");
 var _pacientes = require("./pacientes");
 var _pacientes_dientes = require("./pacientes_dientes");
 var _pacientes_dientes_detalle = require("./pacientes_dientes_detalle");
@@ -36,6 +38,7 @@ var _usuarios_roles = require("./usuarios_roles");
 
 function initModels(sequelize) {
   var citas_medicas = _citas_medicas(sequelize, DataTypes);
+  var citas_medicas_view = _citas_medicas_view(sequelize, DataTypes);
   var cobranzas = _cobranzas(sequelize, DataTypes);
   var cobranzas_detalle = _cobranzas_detalle(sequelize, DataTypes);
   var condiciones_pago = _condiciones_pago(sequelize, DataTypes);
@@ -52,6 +55,7 @@ function initModels(sequelize) {
   var funcionarios = _funcionarios(sequelize, DataTypes);
   var impuestos = _impuestos(sequelize, DataTypes);
   var insumos = _insumos(sequelize, DataTypes);
+  var log_cambios = _log_cambios(sequelize, DataTypes);
   var pacientes = _pacientes(sequelize, DataTypes);
   var pacientes_dientes = _pacientes_dientes(sequelize, DataTypes);
   var pacientes_dientes_detalle = _pacientes_dientes_detalle(sequelize, DataTypes);
@@ -130,6 +134,8 @@ function initModels(sequelize) {
   pacientes.hasMany(fichas_medicas, { as: "fichas_medicas", foreignKey: "paciente_id"});
   pacientes_dientes.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
   pacientes.hasMany(pacientes_dientes, { as: "pacientes_dientes", foreignKey: "paciente_id"});
+  pacientes_dientes_historial.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
+  pacientes.hasMany(pacientes_dientes_historial, { as: "pacientes_dientes_historials", foreignKey: "paciente_id"});
   presupuestos.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
   pacientes.hasMany(presupuestos, { as: "presupuestos", foreignKey: "paciente_id"});
   pacientes_dientes_detalle.belongsTo(pacientes_dientes, { as: "paciente_diente", foreignKey: "paciente_diente_id"});
@@ -162,15 +168,16 @@ function initModels(sequelize) {
   tipos_movimientos_stock.hasMany(stock_actualizar, { as: "stock_actualizars", foreignKey: "tipo_movimiento_id"});
   pacientes_dientes_historial.belongsTo(tratamientos_servicios, { as: "tratamiento_servicio", foreignKey: "tratamiento_servicio_id"});
   tratamientos_servicios.hasMany(pacientes_dientes_historial, { as: "pacientes_dientes_historials", foreignKey: "tratamiento_servicio_id"});
-  citas_medicas.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
-  usuarios.hasMany(citas_medicas, { as: "citas_medicas", foreignKey: "usuario_id"});
   stock_insumos_movimientos.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
   usuarios.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "usuario_id"});
   usuarios_roles.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
   usuarios.hasMany(usuarios_roles, { as: "usuarios_roles", foreignKey: "usuario_id"});
+  log_cambios.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
+  usuarios.hasMany(log_cambios, { as: "log_cambios", foreignKey: "usuario_id"});
 
   return {
     citas_medicas,
+    citas_medicas_view,
     cobranzas,
     cobranzas_detalle,
     condiciones_pago,
@@ -187,6 +194,7 @@ function initModels(sequelize) {
     funcionarios,
     impuestos,
     insumos,
+    log_cambios,
     pacientes,
     pacientes_dientes,
     pacientes_dientes_detalle,

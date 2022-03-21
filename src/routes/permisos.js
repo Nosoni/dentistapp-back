@@ -1,6 +1,7 @@
 const express = require("express")
-const userRoutes = express.Router();
+const router = express.Router()
 const controller = require("../controller/permisos")
-userRoutes.get('/permisos', controller.list);
 
-module.exports = userRoutes
+router.get(`/listar`, controller.listar)
+
+module.exports = router;

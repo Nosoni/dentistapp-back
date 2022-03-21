@@ -1,13 +1,7 @@
-var initModels = require("./init_models");
+const initModels = require("./init_models");
 const Sequelize = require('sequelize');
-let sequelize = new Sequelize('dentistapp', 'dentistapp', 'copernicus', {
-    dialect: 'postgres',
-    logging: false,
-    define: {
-        freezeTableName: true,
-        timestamps: false
-    },
-});
+const config = require('../configuraciones/index').credenciales
+const sequelize = new Sequelize(config.database, config.user, config.password, config.config);
 
 models = initModels(sequelize);
 
