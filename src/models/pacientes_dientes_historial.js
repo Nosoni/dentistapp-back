@@ -32,12 +32,12 @@ class pacientes_dientes_historial extends Sequelize.Model {
         key: 'id'
       }
     },
-    tratamiento_servicio_id: {
+    producto_servicio_id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
       comment: "Campo que hace referencia al tratamiento o servicio hecho o pendiente de realizar",
       references: {
-        model: 'tratamientos_servicios',
+        model: 'productos_servicios',
         key: 'id'
       }
     },

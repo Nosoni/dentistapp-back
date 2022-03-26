@@ -74,6 +74,26 @@ COMMENT ON COLUMN public.permisos.nombre IS 'Nombre del permiso';
 COMMENT ON COLUMN public.permisos.descripcion IS 'Descripción del permiso';
 COMMENT ON COLUMN public.permisos.activo IS 'Indica si el permiso está o no activo';
 
+CREATE TABLE public.productos_servicios (
+	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
+	nombre varchar(30) NOT NULL, -- Nombre del producto o servicio
+	descripcion varchar(100) NULL, -- Descripción del producto o servicio
+	precio int4 NOT NULL, -- Precio del producto o servicio
+	tiempo time(0) NULL, -- Tiempo que conlleva la atención del servicio
+	es_servicio bool NOT NULL DEFAULT false, -- Indica si es o no un servicio
+	activo bool NOT NULL DEFAULT true, -- Indica si el producto o servicio está o no activa
+	CONSTRAINT producto_servicio_chk CHECK ((precio > 0)),
+	CONSTRAINT producto_servicio_pk PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.productos_servicios IS 'Representa a los productos o servicios ofrecidos por la empresa';
+COMMENT ON COLUMN public.productos_servicios.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.productos_servicios.nombre IS 'Nombre del producto o servicio';
+COMMENT ON COLUMN public.productos_servicios.descripcion IS 'Descripción del producto o servicio';
+COMMENT ON COLUMN public.productos_servicios.precio IS 'Precio del producto o servicio';
+COMMENT ON COLUMN public.productos_servicios.tiempo IS 'Tiempo que conlleva la atención del servicio';
+COMMENT ON COLUMN public.productos_servicios.es_servicio IS 'Indica si es o no un servicio';
+COMMENT ON COLUMN public.productos_servicios.activo IS 'Indica si el producto o servicio está o no activa';
+
 CREATE TABLE public.roles (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	nombre varchar(50) NOT NULL, -- Nombre del rol
@@ -114,24 +134,6 @@ COMMENT ON COLUMN public.tipos_movimientos_stock.nombre IS 'Nombre del tipo de m
 COMMENT ON COLUMN public.tipos_movimientos_stock.descripcion IS 'Descripción del tipo de movimiento de stock';
 COMMENT ON COLUMN public.tipos_movimientos_stock.signo IS 'Valor numérico. Indica cómo se comportará el movimiento.';
 COMMENT ON COLUMN public.tipos_movimientos_stock.activo IS 'Indica si el tipo de movimiento está o no activo';
-
-CREATE TABLE public.tratamientos_servicios (
-	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	nombre varchar(30) NOT NULL, -- Nombre del tratamiento o servicio
-	descripcion varchar(100) NULL, -- Descripción del tratamiento o servicio
-	precio int4 NOT NULL, -- Precio del tratamiento o servicio
-	tiempo time(0) NULL, -- Tiempo que conlleva la atención del tratamiento o servicio
-	activo bool NOT NULL DEFAULT true, -- Indica si el tratamiento o servicio está o no activa
-	CONSTRAINT tratamiento_servicio_chk CHECK ((precio > 0)),
-	CONSTRAINT tratamiento_servicio_pk PRIMARY KEY (id)
-);
-COMMENT ON TABLE public.tratamientos_servicios IS 'Representa a los tratamientos o servicios ofrecidos por el consultorio';
-COMMENT ON COLUMN public.tratamientos_servicios.id IS 'Código identificador autogenerado';
-COMMENT ON COLUMN public.tratamientos_servicios.nombre IS 'Nombre del tratamiento o servicio';
-COMMENT ON COLUMN public.tratamientos_servicios.descripcion IS 'Descripción del tratamiento o servicio';
-COMMENT ON COLUMN public.tratamientos_servicios.precio IS 'Precio del tratamiento o servicio';
-COMMENT ON COLUMN public.tratamientos_servicios.tiempo IS 'Tiempo que conlleva la atención del tratamiento o servicio';
-COMMENT ON COLUMN public.tratamientos_servicios.activo IS 'Indica si el tratamiento o servicio está o no activa';
 
 CREATE TABLE public.especialidades (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
@@ -262,20 +264,20 @@ CREATE TABLE public.pacientes_dientes_historial (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	paciente_id int4 NOT NULL, -- Campo que hace referencia al paciente
 	paciente_diente_id int4 NULL, -- Campo que hace referencia al diente del paciente
-	tratamiento_servicio_id int2 NOT NULL, -- Campo que hace referencia al tratamiento o servicio hecho o pendiente de realizar
+	producto_servicio_id int2 NOT NULL, -- Campo que hace referencia al servicio hecho o pendiente de realizar
 	estado_historial_id int2 NOT NULL, -- Campo que hace referencia al estado del historial del diente
 	activo bool NOT NULL DEFAULT true, -- Indica si el historia del diente está o no activo
 	CONSTRAINT paciente_diente_historial_pk PRIMARY KEY (id),
 	CONSTRAINT pacientes_dientes_historial_fk_estado FOREIGN KEY (estado_historial_id) REFERENCES estados_movimientos(id),
 	CONSTRAINT pacientes_dientes_historial_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
 	CONSTRAINT pacientes_dientes_historial_fk_paciente_diente FOREIGN KEY (paciente_diente_id) REFERENCES pacientes_dientes(id),
-	CONSTRAINT pacientes_dientes_historial_fk_tratamiento_servicio FOREIGN KEY (tratamiento_servicio_id) REFERENCES tratamientos_servicios(id)
+	CONSTRAINT pacientes_dientes_historial_fk_producto_servicio FOREIGN KEY (producto_servicio_id) REFERENCES productos_servicios(id)
 );
-COMMENT ON TABLE public.pacientes_dientes_historial IS 'Representa al historial de tratamientos que ha recibido el diente del paciente';
+COMMENT ON TABLE public.pacientes_dientes_historial IS 'Representa al historial de servicios que ha recibido el diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.pacientes_dientes_historial.paciente_id IS 'Campo que hace referencia al paciente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.paciente_diente_id IS 'Campo que hace referencia al diente del paciente';
-COMMENT ON COLUMN public.pacientes_dientes_historial.tratamiento_servicio_id IS 'Campo que hace referencia al tratamiento o servicio hecho o pendiente de realizar';
+COMMENT ON COLUMN public.pacientes_dientes_historial.producto_servicio_id IS 'Campo que hace referencia al servicio hecho o pendiente de realizar';
 COMMENT ON COLUMN public.pacientes_dientes_historial.estado_historial_id IS 'Campo que hace referencia al estado del historial del diente';
 COMMENT ON COLUMN public.pacientes_dientes_historial.activo IS 'Indica si el historia del diente está o no activo';
 
@@ -289,7 +291,7 @@ CREATE TABLE public.presupuestos (
 	CONSTRAINT presupuestos_fk_estado FOREIGN KEY (estado_presupuesto_id) REFERENCES estados_movimientos(id),
 	CONSTRAINT presupuestos_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
 );
-COMMENT ON TABLE public.presupuestos IS 'Representa al proceso de presupuestar los tratamientos a los pacientes';
+COMMENT ON TABLE public.presupuestos IS 'Representa al proceso de presupuestar los productos o servicios a los pacientes';
 COMMENT ON COLUMN public.presupuestos.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.presupuestos.fecha IS 'Fecha del proceso de presupuestar';
 COMMENT ON COLUMN public.presupuestos.paciente_id IS 'Campo que hace referencia a un paciente';
@@ -300,7 +302,7 @@ CREATE TABLE public.presupuestos_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	presupuesto_id int2 NOT NULL, -- Campo que hace referencia al presupuesto
 	paciente_diente_historial_id int2 NOT NULL, -- Campo que hace referencia al historial médico a presupuestar
-	precio int4 NOT NULL, -- Precio del tratamiento
+	precio int4 NOT NULL, -- Precio del producto o servicio
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle del presupuesto está o no activo
 	CONSTRAINT presupuesto_detalle_chk CHECK ((precio > 0)),
 	CONSTRAINT presupuesto_detalle_pk PRIMARY KEY (id),
@@ -311,7 +313,7 @@ COMMENT ON TABLE public.presupuestos_detalle IS 'Representa al detalle del proce
 COMMENT ON COLUMN public.presupuestos_detalle.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.presupuestos_detalle.presupuesto_id IS 'Campo que hace referencia al presupuesto';
 COMMENT ON COLUMN public.presupuestos_detalle.paciente_diente_historial_id IS 'Campo que hace referencia al historial médico a presupuestar';
-COMMENT ON COLUMN public.presupuestos_detalle.precio IS 'Precio del tratamiento';
+COMMENT ON COLUMN public.presupuestos_detalle.precio IS 'Precio del producto o servicio';
 COMMENT ON COLUMN public.presupuestos_detalle.activo IS 'Indica si el detalle del presupuesto está o no activo';
 
 CREATE TABLE public.roles_permisos (
@@ -479,7 +481,7 @@ CREATE TABLE public.facturas (
 	CONSTRAINT facturas_fk_estado FOREIGN KEY (estado_factura_id) REFERENCES estados_movimientos(id),
 	CONSTRAINT facturas_fk_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
 );
-COMMENT ON TABLE public.facturas IS 'Representa a las facturas emitidas a los pacientes por los tratamientos realizados';
+COMMENT ON TABLE public.facturas IS 'Representa a las facturas emitidas a los pacientes por los productos o servicios realizados';
 COMMENT ON COLUMN public.facturas.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.facturas.fecha IS 'Fecha de la factura';
 COMMENT ON COLUMN public.facturas.paciente_id IS 'Campo que hace referencia a un paciente';
@@ -492,7 +494,7 @@ CREATE TABLE public.facturas_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	factura_id int2 NOT NULL, -- Campo que hace referencia a la factura
 	paciente_diente_historial_id int2 NOT NULL, -- Campo que hace referencia al historial médico a facturar
-	precio int4 NOT NULL, -- Precio del tratamiento
+	precio int4 NOT NULL, -- Precio del producto o servicio
 	impuesto_id int2 NOT NULL, -- Campo que hace referencia al impuesto
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle está o no activo
 	CONSTRAINT factura_detalle_chk CHECK ((precio > 0)),
@@ -505,7 +507,7 @@ COMMENT ON TABLE public.facturas_detalle IS 'Representa a los detalles de las fa
 COMMENT ON COLUMN public.facturas_detalle.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.facturas_detalle.factura_id IS 'Campo que hace referencia a la factura';
 COMMENT ON COLUMN public.facturas_detalle.paciente_diente_historial_id IS 'Campo que hace referencia al historial médico a facturar';
-COMMENT ON COLUMN public.facturas_detalle.precio IS 'Precio del tratamiento';
+COMMENT ON COLUMN public.facturas_detalle.precio IS 'Precio del producto o servicio';
 COMMENT ON COLUMN public.facturas_detalle.impuesto_id IS 'Campo que hace referencia al impuesto';
 COMMENT ON COLUMN public.facturas_detalle.activo IS 'Indica si el detalle está o no activo';
 

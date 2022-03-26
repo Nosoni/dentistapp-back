@@ -33,7 +33,7 @@ class cobranzas_detalle extends Sequelize.Model {
       }
     },
     monto: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: "Monto de pago"
     },
