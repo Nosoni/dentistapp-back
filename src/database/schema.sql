@@ -236,6 +236,7 @@ CREATE TABLE public.pacientes_dientes (
 );
 COMMENT ON TABLE public.pacientes_dientes IS 'Representa a los dientes del paciente';
 COMMENT ON COLUMN public.pacientes_dientes.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.pacientes_dientes.paciente_id IS 'Campo que hace referencia a un paciente';
 COMMENT ON COLUMN public.pacientes_dientes.diente_id IS 'Campo que hace referencia a un diente';
 COMMENT ON COLUMN public.pacientes_dientes.estado_diente_id IS 'Campo que hace referencia al estado del diente';
 COMMENT ON COLUMN public.pacientes_dientes.activo IS 'Indica si el diente del paciente está o no activo';
@@ -252,7 +253,6 @@ CREATE TABLE public.pacientes_dientes_detalle (
 );
 COMMENT ON TABLE public.pacientes_dientes_detalle IS 'Representa el detalle del diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.id IS 'Código identificador autogenerado';
-COMMENT ON COLUMN public.pacientes_dientes_detalle.paciente_id IS 'Campo que hace referencia al paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.paciente_diente_id IS 'Campo que hace referencia al diente del paciente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.estado_detalle_id IS 'Campo que hace referencia al estado del detalle del diente';
 COMMENT ON COLUMN public.pacientes_dientes_detalle.cara IS 'Indica el número de cara que corresponde el detalle';
