@@ -1,4 +1,4 @@
-const controller = require("../controller/tratamientos_servicios")
+const controller = require("../controller/productos_servicios")
 const express = require('express')
 const router = express.Router()
 

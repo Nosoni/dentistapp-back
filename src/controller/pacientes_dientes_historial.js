@@ -1,5 +1,5 @@
 const pacienteDienteHistorialModel = require("../models/inicializar_modelos").pacientes_dientes_historial;
-const tratamientoServicioModel = require("../models/inicializar_modelos").tratamientos_servicios;
+const productoServicioModel = require("../models/inicializar_modelos").productos_servicios;
 const getEstadoInicialTabla = require('./estados_movimientos').getEstadoInicialTabla
 const getEstadosByActual = require('./estados_movimientos').getEstadosByActual
 const { Op } = require("sequelize")
@@ -7,7 +7,7 @@ const { Op } = require("sequelize")
 module.exports = {
   async get_paciente_historial(paciente_id) {
     const paciente_historial = await pacienteDienteHistorialModel.findAll({
-      include: { model: tratamientoServicioModel, as: "tratamiento_servicio", where: { activo: true } },
+      include: { model: productoServicioModel, as: "producto_servicio", where: { activo: true } },
       where: {
         [Op.and]: {
           paciente_id,
