@@ -135,6 +135,32 @@ COMMENT ON COLUMN public.tipos_movimientos_stock.descripcion IS 'Descripción de
 COMMENT ON COLUMN public.tipos_movimientos_stock.signo IS 'Valor numérico. Indica cómo se comportará el movimiento.';
 COMMENT ON COLUMN public.tipos_movimientos_stock.activo IS 'Indica si el tipo de movimiento está o no activo';
 
+CREATE TABLE public.clientes (
+	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
+	documento varchar(10) NOT NULL, -- Campo que representa al número de documento
+	tipo_documento_id int2 NOT NULL, -- Campo que hace referencia al tipo de documento
+	nombres varchar(50) NOT NULL, -- Nombre o nombres del cliente
+	apellidos varchar(50) NOT NULL, -- Apellidos o apellido del cliente
+	direccion varchar(100) NULL, -- Dirección de domicilio del cliente
+	ciudad varchar(20) NULL, -- Ciudad de domicilio del cliente
+	telefono varchar(10) NULL, -- Número de telefono del cliente
+	email varchar(50) NULL, -- Correo electrónico del cliente
+	activo bool NOT NULL DEFAULT true, -- Indica si el cliente está o no activo
+	CONSTRAINT cliente_pk PRIMARY KEY (id),
+	CONSTRAINT clientes_fk_tipo_docuemto FOREIGN KEY (tipo_documento_id) REFERENCES tipos_documentos(id)
+);
+COMMENT ON TABLE public.clientes IS 'Representa a los clientes del  consultorio';
+COMMENT ON COLUMN public.clientes.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.clientes.documento IS 'Campo que representa al número de documento';
+COMMENT ON COLUMN public.clientes.tipo_documento_id IS 'Campo que hace referencia al tipo de documento';
+COMMENT ON COLUMN public.clientes.nombres IS 'Nombre o nombres del cliente';
+COMMENT ON COLUMN public.clientes.apellidos IS 'Apellidos o apellido del cliente';
+COMMENT ON COLUMN public.clientes.direccion IS 'Dirección de domicilio del cliente';
+COMMENT ON COLUMN public.clientes.ciudad IS 'Ciudad de domicilio del cliente';
+COMMENT ON COLUMN public.clientes.telefono IS 'Número de telefono del cliente';
+COMMENT ON COLUMN public.clientes.email IS 'Correo electrónico del cliente';
+COMMENT ON COLUMN public.clientes.activo IS 'Indica si el cliente está o no activo';
+
 CREATE TABLE public.especialidades (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	nombre varchar(30) NOT NULL, -- Nombre de la especialidad

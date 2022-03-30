@@ -1,6 +1,7 @@
 var DataTypes = require("sequelize").DataTypes;
 var _citas_medicas = require("./citas_medicas");
 var _citas_medicas_view = require("./citas_medicas_view");
+var _clientes = require("./clientes");
 var _cobranzas = require("./cobranzas");
 var _cobranzas_detalle = require("./cobranzas_detalle");
 var _condiciones_pago = require("./condiciones_pago");
@@ -39,6 +40,7 @@ var _usuarios_roles = require("./usuarios_roles");
 function initModels(sequelize) {
   var citas_medicas = _citas_medicas(sequelize, DataTypes);
   var citas_medicas_view = _citas_medicas_view(sequelize, DataTypes);
+  var clientes = _clientes(sequelize, DataTypes);
   var cobranzas = _cobranzas(sequelize, DataTypes);
   var cobranzas_detalle = _cobranzas_detalle(sequelize, DataTypes);
   var condiciones_pago = _condiciones_pago(sequelize, DataTypes);
@@ -162,6 +164,8 @@ function initModels(sequelize) {
   stock_actualizar.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "stock_actualizar_id"});
   stock_insumos_movimientos.belongsTo(stock_actualizar_detalle, { as: "stock_actualizar_detalle", foreignKey: "stock_actualizar_detalle_id"});
   stock_actualizar_detalle.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "stock_actualizar_detalle_id"});
+  clientes.belongsTo(tipos_documentos, { as: "tipo_documento", foreignKey: "tipo_documento_id"});
+  tipos_documentos.hasMany(clientes, { as: "clientes", foreignKey: "tipo_documento_id"});
   funcionarios.belongsTo(tipos_documentos, { as: "tipo_documento", foreignKey: "tipo_documento_id"});
   tipos_documentos.hasMany(funcionarios, { as: "funcionarios", foreignKey: "tipo_documento_id"});
   pacientes.belongsTo(tipos_documentos, { as: "tipo_documento", foreignKey: "tipo_documento_id"});
@@ -178,6 +182,7 @@ function initModels(sequelize) {
   return {
     citas_medicas,
     citas_medicas_view,
+    clientes,
     cobranzas,
     cobranzas_detalle,
     condiciones_pago,

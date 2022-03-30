@@ -1,6 +1,7 @@
 const express = require('express')
 //#region routes
 const citas_medicas = require('./citas_medicas')
+const clientes = require('./clientes')
 const cobranzas = require('./cobranzas')
 const condiciones_pago = require('./condiciones_pago')
 const deudas = require('./deudas')
@@ -34,6 +35,7 @@ const definiciones = require('../constantes')
 
 router.all("*", requiereAutenticacion)
 router.use("/citas_medicas", citas_medicas)
+router.use("/clientes", clientes)
 router.use("/cobranzas", cobranzas)
 router.use("/condiciones_pago", condiciones_pago)
 router.use("/deudas", deudas)

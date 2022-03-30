@@ -1,5 +1,6 @@
 INSERT INTO public.tipos_documentos (descripcion,abreviacion,activo) VALUES
-	 ('Cédula','CI',true);
+	 ('Cédula','CI',true),
+	 ('RUC','RUC',true);
 
 INSERT INTO public.funcionarios (documento,tipo_documento_id,nombres,apellidos,fecha_ingreso,direccion,ciudad,telefono,email,activo) VALUES
 	 ('3828622',1,'francisco','recalde','2021-10-31',NULL,NULL,NULL,NULL,true);
@@ -18,13 +19,14 @@ INSERT INTO public.permisos (nombre,descripcion,activo) VALUES
 	 ('menu_ver_paciente','Concede acceso al menú paciente',true),
 	 ('menu_ver_doctor','Concede acceso al menú doctor',true),
 	 ('menu_ver_especialidad','Concede acceso al menú especialidad',true),
-	 ('menu_ver_tratamiento_servicio','Concede acceso al menú tratamiento y servicio',true),
+	 ('menu_ver_producto_servicio','Concede acceso al menú producto y servicio',true),
 	 ('menu_ver_insumo','Concede acceso al menú insumo',true),
 	 ('menu_ver_cita_medica','Concede acceso al menú cita médica',true),
 	 ('menu_ver_facturacion','Concede acceso al menú facturación',true),
 	 ('menu_ver_presupuesto','Concede acceso al menú presupuesto',true),
 	 ('menu_ver_actualizar_stock','Concede acceso al menú actualizar stock',true),
 	 ('menu_ver_cobranza','Concede acceso al menú cobranza',true),
+	 ('menu_ver_cliente','Concede acceso al menú cliente',true),
 	 ('menu_ver_reporte_inventario','Concede acceso al menú reporte inventario',true),
 	 ('menu_ver_reporte_facturacion','Concede acceso al menú reporte facturacion',true);
    
