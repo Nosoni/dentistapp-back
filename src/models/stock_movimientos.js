@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  return stock_insumos_movimientos.init(sequelize, DataTypes);
+  return stock_movimientos.init(sequelize, DataTypes);
 }
 
-class stock_insumos_movimientos extends Sequelize.Model {
+class stock_movimientos extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   super.init({
     id: {
@@ -14,19 +14,19 @@ class stock_insumos_movimientos extends Sequelize.Model {
       comment: "Código identificador autogenerado",
       primaryKey: true
     },
-    insumo_id: {
+    producto_id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
-      comment: "Campo que hace referencia a un insumo",
+      comment: "Campo que hace referencia a un producto",
       references: {
-        model: 'insumos',
+        model: 'productos_servicios',
         key: 'id'
       }
     },
     stock_actualizar_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      comment: "Campo que hace referencia al registro desde donde se realizó la actualización",
+      allowNull: true,
+      comment: "Campo que hace referencia al registro de actualización",
       references: {
         model: 'stock_actualizar',
         key: 'id'
@@ -34,10 +34,28 @@ class stock_insumos_movimientos extends Sequelize.Model {
     },
     stock_actualizar_detalle_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      comment: "Campo que hace referencia al registro del detalle desde donde se realizó la actualización",
+      allowNull: true,
+      comment: "Campo que hace referencia al registro del detalle de actualización",
       references: {
         model: 'stock_actualizar_detalle',
+        key: 'id'
+      }
+    },
+    factura_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: "Campo que hace referencia al registro de facturación",
+      references: {
+        model: 'facturas',
+        key: 'id'
+      }
+    },
+    factura_detalle_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: "Campo que hace referencia al registro del detalle de facturación",
+      references: {
+        model: 'facturas_detalle',
         key: 'id'
       }
     },
@@ -74,12 +92,12 @@ class stock_insumos_movimientos extends Sequelize.Model {
     }
   }, {
     sequelize,
-    tableName: 'stock_insumos_movimientos',
+    tableName: 'stock_movimientos',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "stock_insumo_movimiento_pk",
+        name: "stock_movimiento_pk",
         unique: true,
         fields: [
           { name: "id" },
@@ -87,6 +105,6 @@ class stock_insumos_movimientos extends Sequelize.Model {
       },
     ]
   });
-  return stock_insumos_movimientos;
+  return stock_movimientos;
   }
 }

@@ -45,22 +45,6 @@ COMMENT ON COLUMN public.impuestos.descripcion IS 'Descripción del impuesto';
 COMMENT ON COLUMN public.impuestos.porcentaje IS 'Porcentaje del impuesto';
 COMMENT ON COLUMN public.impuestos.activo IS 'Indica si el impuesto está o no activo';
 
-CREATE TABLE public.insumos (
-	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY,
-	nombre varchar(30) NOT NULL, -- Nombre del insumo
-	descripcion varchar(100) NULL, -- Descripción del insumo
-	codigo varchar(10) NOT NULL, -- Código del insumo
-	cantidad_minima int2 NULL, -- Cantidad mínima del insumo en el stock
-	activo bool NOT NULL DEFAULT true, -- Indica si el insumo está o no activo
-	CONSTRAINT insumo_pk PRIMARY KEY (id)
-);
-COMMENT ON TABLE public.insumos IS 'Representa los insumos del  consultorio';
-COMMENT ON COLUMN public.insumos.nombre IS 'Nombre del insumo';
-COMMENT ON COLUMN public.insumos.descripcion IS 'Descripción del insumo';
-COMMENT ON COLUMN public.insumos.codigo IS 'Código del insumo';
-COMMENT ON COLUMN public.insumos.cantidad_minima IS 'Cantidad mínima del insumo en el stock';
-COMMENT ON COLUMN public.insumos.activo IS 'Indica si el insumo está o no activo';
-
 CREATE TABLE public.permisos (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	nombre varchar(50) NOT NULL, -- Nombre del permiso
@@ -79,7 +63,7 @@ CREATE TABLE public.productos_servicios (
 	nombre varchar(30) NOT NULL, -- Nombre del producto o servicio
 	descripcion varchar(100) NULL, -- Descripción del producto o servicio
 	precio int4 NOT NULL, -- Precio del producto o servicio
-	tiempo time(0) NULL, -- Tiempo que conlleva la atención del servicio
+	cantidad_minima int2 NULL, -- Cantidad mínima del producto en el stock
 	es_servicio bool NOT NULL DEFAULT false, -- Indica si es o no un servicio
 	activo bool NOT NULL DEFAULT true, -- Indica si el producto o servicio está o no activa
 	CONSTRAINT producto_servicio_chk CHECK ((precio > 0)),
@@ -368,7 +352,7 @@ CREATE TABLE public.stock_actualizar (
 	CONSTRAINT stock_actualizar_fk_estado FOREIGN KEY (estado_movimiento_id) REFERENCES estados_movimientos(id),
 	CONSTRAINT stock_actualizar_fk_tipo_movimiento FOREIGN KEY (tipo_movimiento_id) REFERENCES tipos_movimientos_stock(id)
 );
-COMMENT ON TABLE public.stock_actualizar IS 'Representa al proceso de actualización del stock de insumos del consultorio';
+COMMENT ON TABLE public.stock_actualizar IS 'Representa al proceso de actualización del stock del producto del consultorio';
 COMMENT ON COLUMN public.stock_actualizar.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.stock_actualizar.fecha IS 'Fecha y hora del proceso de actualizacíon';
 COMMENT ON COLUMN public.stock_actualizar.tipo_movimiento_id IS 'Campo que hace referencia al tipo de movimiento';
@@ -379,18 +363,18 @@ COMMENT ON COLUMN public.stock_actualizar.activo IS 'Indica si el movimiento est
 CREATE TABLE public.stock_actualizar_detalle (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
 	stock_actualizar_id int2 NOT NULL, -- Campo que hace referencia al stock de actualización
-	insumo_id int2 NOT NULL, -- Campo que hace referencia a un insumo
+	producto_id int2 NOT NULL, -- Campo que hace referencia a un producto
 	cantidad int2 NOT NULL, -- Cantidad para actualizar el stock
 	activo bool NOT NULL DEFAULT true, -- Indica si el detalle del proceso de actualización está o no activo
 	CONSTRAINT stock_actualizar_detalle_chk CHECK ((cantidad > 0)),
 	CONSTRAINT stock_actualizar_detalle_pk PRIMARY KEY (id),
-	CONSTRAINT stock_actualizar_detalle_fk_insumo FOREIGN KEY (insumo_id) REFERENCES insumos(id),
+	CONSTRAINT stock_actualizar_detalle_fk_producto FOREIGN KEY (producto_id) REFERENCES productos_servicios(id),
 	CONSTRAINT stock_actualizar_detalle_fk_stock_actualizar FOREIGN KEY (stock_actualizar_id) REFERENCES stock_actualizar(id)
 );
-COMMENT ON TABLE public.stock_actualizar_detalle IS 'Representa al detalle de actualización del stock de insumos del consultorio';
+COMMENT ON TABLE public.stock_actualizar_detalle IS 'Representa al detalle de actualización del stock de productos del consultorio';
 COMMENT ON COLUMN public.stock_actualizar_detalle.id IS 'Código identificador autogenerado';
 COMMENT ON COLUMN public.stock_actualizar_detalle.stock_actualizar_id IS 'Campo que hace referencia al stock de actualización';
-COMMENT ON COLUMN public.stock_actualizar_detalle.insumo_id IS 'Campo que hace referencia a un insumo';
+COMMENT ON COLUMN public.stock_actualizar_detalle.producto_id IS 'Campo que hace referencia a un producto';
 COMMENT ON COLUMN public.stock_actualizar_detalle.cantidad IS 'Cantidad para actualizar el stock';
 COMMENT ON COLUMN public.stock_actualizar_detalle.activo IS 'Indica si el detalle del proceso de actualización está o no activo';
 
@@ -615,32 +599,38 @@ COMMENT ON COLUMN public.log_cambios.registro_id IS 'Id del registro que realiza
 COMMENT ON COLUMN public.log_cambios.usuario_id IS 'Campo que representa al usuario que realizó el cambio';
 COMMENT ON COLUMN public.log_cambios.fecha IS 'Fecha y hora del cambio';
 
-CREATE TABLE public.stock_insumos_movimientos (
+CREATE TABLE public.stock_movimientos (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado
-	insumo_id int2 NOT NULL, -- Campo que hace referencia a un insumo
-	stock_actualizar_id int4 NOT NULL, -- Campo que hace referencia al registro desde donde se realizó la actualización
-	stock_actualizar_detalle_id int4 NOT NULL, -- Campo que hace referencia al registro del detalle desde donde se realizó la actualización
+	producto_id int2 NOT NULL, -- Campo que hace referencia a un producto
+	stock_actualizar_id int4 NULL, -- Campo que hace referencia al registro de actualización
+	stock_actualizar_detalle_id int4 NULL, -- Campo que hace referencia al registro del detalle de actualización
+	factura_id int4 NULL, -- Campo que hace referencia al registro de facturación
+	factura_detalle_id int4 NULL, -- Campo que hace referencia al registro del detalle de facturación
 	cantidad int2 NOT NULL, -- Cantidad del movimiento
 	fecha_insercion timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha en la que se realizó la inserción del movimiento
 	fecha_movimiento date NOT NULL, -- Fecha del movimiento
 	usuario_id int2 NULL, -- Campo que hace referencia al usuario que realizó la actualización
 	activo bool NOT NULL DEFAULT true, -- Indica si el movimiento está o no activo
-	CONSTRAINT stock_insumo_movimiento_pk PRIMARY KEY (id),
-	CONSTRAINT stock_insumos_movimientos_fk_insumo FOREIGN KEY (insumo_id) REFERENCES insumos(id),
-	CONSTRAINT stock_insumos_movimientos_fk_stock_actualizar FOREIGN KEY (stock_actualizar_id) REFERENCES stock_actualizar(id),
-	CONSTRAINT stock_insumos_movimientos_fk_stock_actualizar_detalle FOREIGN KEY (stock_actualizar_detalle_id) REFERENCES stock_actualizar_detalle(id),
-	CONSTRAINT stock_insumos_movimientos_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+	CONSTRAINT stock_movimiento_pk PRIMARY KEY (id),
+	CONSTRAINT stock_movimientos_fk_producto FOREIGN KEY (producto_id) REFERENCES productos_servicios(id),
+	CONSTRAINT stock_movimientos_fk_stock_actualizar FOREIGN KEY (stock_actualizar_id) REFERENCES stock_actualizar(id),
+	CONSTRAINT stock_movimientos_fk_stock_actualizar_detalle FOREIGN KEY (stock_actualizar_detalle_id) REFERENCES stock_actualizar_detalle(id),
+	CONSTRAINT stock_movimientos_fk_factura FOREIGN KEY (factura_id) REFERENCES facturas(id),
+	CONSTRAINT stock_movimientos_fk_factura_detalle FOREIGN KEY (factura_detalle_id) REFERENCES facturas_detalle(id),
+	CONSTRAINT stock_movimientos_fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
-COMMENT ON TABLE public.stock_insumos_movimientos IS 'Representa el movimiento del stock de los insumos del consultorio';
-COMMENT ON COLUMN public.stock_insumos_movimientos.id IS 'Código identificador autogenerado';
-COMMENT ON COLUMN public.stock_insumos_movimientos.insumo_id IS 'Campo que hace referencia a un insumo';
-COMMENT ON COLUMN public.stock_insumos_movimientos.stock_actualizar_id IS 'Campo que hace referencia al registro desde donde se realizó la actualización';
-COMMENT ON COLUMN public.stock_insumos_movimientos.stock_actualizar_detalle_id IS 'Campo que hace referencia al registro del detalle desde donde se realizó la actualización';
-COMMENT ON COLUMN public.stock_insumos_movimientos.cantidad IS 'Cantidad del movimiento';
-COMMENT ON COLUMN public.stock_insumos_movimientos.fecha_insercion IS 'Fecha en la que se realizó la inserción del movimiento';
-COMMENT ON COLUMN public.stock_insumos_movimientos.fecha_movimiento IS 'Fecha del movimiento';
-COMMENT ON COLUMN public.stock_insumos_movimientos.usuario_id IS 'Campo que hace referencia al usuario que realizó la actualización';
-COMMENT ON COLUMN public.stock_insumos_movimientos.activo IS 'Indica si el movimiento está o no activo';
+COMMENT ON TABLE public.stock_movimientos IS 'Representa el movimiento del stock de los productos del consultorio';
+COMMENT ON COLUMN public.stock_movimientos.id IS 'Código identificador autogenerado';
+COMMENT ON COLUMN public.stock_movimientos.producto_id IS 'Campo que hace referencia a un producto';
+COMMENT ON COLUMN public.stock_movimientos.stock_actualizar_id IS 'Campo que hace referencia al registro de actualización';
+COMMENT ON COLUMN public.stock_movimientos.stock_actualizar_detalle_id IS 'Campo que hace referencia al registro del detalle de actualización';
+COMMENT ON COLUMN public.stock_movimientos.factura_id IS 'Campo que hace referencia al registro de facturación';
+COMMENT ON COLUMN public.stock_movimientos.factura_detalle_id IS 'Campo que hace referencia al registro del detalle de facturación';
+COMMENT ON COLUMN public.stock_movimientos.cantidad IS 'Cantidad del movimiento';
+COMMENT ON COLUMN public.stock_movimientos.fecha_insercion IS 'Fecha en la que se realizó la inserción del movimiento';
+COMMENT ON COLUMN public.stock_movimientos.fecha_movimiento IS 'Fecha del movimiento';
+COMMENT ON COLUMN public.stock_movimientos.usuario_id IS 'Campo que hace referencia al usuario que realizó la actualización';
+COMMENT ON COLUMN public.stock_movimientos.activo IS 'Indica si el movimiento está o no activo';
 
 CREATE TABLE public.deudas (
 	id int2 NOT NULL GENERATED ALWAYS AS IDENTITY, -- Código identificador autogenerado

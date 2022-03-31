@@ -23,12 +23,12 @@ class stock_actualizar_detalle extends Sequelize.Model {
         key: 'id'
       }
     },
-    insumo_id: {
+    producto_id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
-      comment: "Campo que hace referencia a un insumo",
+      comment: "Campo que hace referencia a un producto",
       references: {
-        model: 'insumos',
+        model: 'productos_servicios',
         key: 'id'
       }
     },

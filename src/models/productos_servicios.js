@@ -29,10 +29,10 @@ class productos_servicios extends Sequelize.Model {
       allowNull: false,
       comment: "Precio del producto o servicio"
     },
-    tiempo: {
-      type: DataTypes.TIME,
+    cantidad_minima: {
+      type: DataTypes.SMALLINT,
       allowNull: true,
-      comment: "Tiempo que conlleva la atención del servicio"
+      comment: "Cantidad mínima del producto en el stock"
     },
     es_servicio: {
       type: DataTypes.BOOLEAN,

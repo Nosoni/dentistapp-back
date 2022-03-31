@@ -17,7 +17,6 @@ var _facturas_detalle = require("./facturas_detalle");
 var _fichas_medicas = require("./fichas_medicas");
 var _funcionarios = require("./funcionarios");
 var _impuestos = require("./impuestos");
-var _insumos = require("./insumos");
 var _log_cambios = require("./log_cambios");
 var _pacientes = require("./pacientes");
 var _pacientes_dientes = require("./pacientes_dientes");
@@ -31,7 +30,7 @@ var _roles = require("./roles");
 var _roles_permisos = require("./roles_permisos");
 var _stock_actualizar = require("./stock_actualizar");
 var _stock_actualizar_detalle = require("./stock_actualizar_detalle");
-var _stock_insumos_movimientos = require("./stock_insumos_movimientos");
+var _stock_movimientos = require("./stock_movimientos");
 var _tipos_documentos = require("./tipos_documentos");
 var _tipos_movimientos_stock = require("./tipos_movimientos_stock");
 var _usuarios = require("./usuarios");
@@ -56,7 +55,6 @@ function initModels(sequelize) {
   var fichas_medicas = _fichas_medicas(sequelize, DataTypes);
   var funcionarios = _funcionarios(sequelize, DataTypes);
   var impuestos = _impuestos(sequelize, DataTypes);
-  var insumos = _insumos(sequelize, DataTypes);
   var log_cambios = _log_cambios(sequelize, DataTypes);
   var pacientes = _pacientes(sequelize, DataTypes);
   var pacientes_dientes = _pacientes_dientes(sequelize, DataTypes);
@@ -70,7 +68,7 @@ function initModels(sequelize) {
   var roles_permisos = _roles_permisos(sequelize, DataTypes);
   var stock_actualizar = _stock_actualizar(sequelize, DataTypes);
   var stock_actualizar_detalle = _stock_actualizar_detalle(sequelize, DataTypes);
-  var stock_insumos_movimientos = _stock_insumos_movimientos(sequelize, DataTypes);
+  var stock_movimientos = _stock_movimientos(sequelize, DataTypes);
   var tipos_documentos = _tipos_documentos(sequelize, DataTypes);
   var tipos_movimientos_stock = _tipos_movimientos_stock(sequelize, DataTypes);
   var usuarios = _usuarios(sequelize, DataTypes);
@@ -116,16 +114,16 @@ function initModels(sequelize) {
   facturas.hasMany(deudas, { as: "deudas", foreignKey: "factura_id"});
   facturas_detalle.belongsTo(facturas, { as: "factura", foreignKey: "factura_id"});
   facturas.hasMany(facturas_detalle, { as: "facturas_detalles", foreignKey: "factura_id"});
+  stock_movimientos.belongsTo(facturas, { as: "factura", foreignKey: "factura_id"});
+  facturas.hasMany(stock_movimientos, { as: "stock_movimientos", foreignKey: "factura_id"});
+  stock_movimientos.belongsTo(facturas_detalle, { as: "factura_detalle", foreignKey: "factura_detalle_id"});
+  facturas_detalle.hasMany(stock_movimientos, { as: "stock_movimientos", foreignKey: "factura_detalle_id"});
   doctores.belongsTo(funcionarios, { as: "funcionario", foreignKey: "funcionario_id"});
   funcionarios.hasMany(doctores, { as: "doctores", foreignKey: "funcionario_id"});
   usuarios.belongsTo(funcionarios, { as: "funcionario", foreignKey: "funcionario_id"});
   funcionarios.hasMany(usuarios, { as: "usuarios", foreignKey: "funcionario_id"});
   facturas_detalle.belongsTo(impuestos, { as: "impuesto", foreignKey: "impuesto_id"});
   impuestos.hasMany(facturas_detalle, { as: "facturas_detalles", foreignKey: "impuesto_id"});
-  stock_actualizar_detalle.belongsTo(insumos, { as: "insumo", foreignKey: "insumo_id"});
-  insumos.hasMany(stock_actualizar_detalle, { as: "stock_actualizar_detalles", foreignKey: "insumo_id"});
-  stock_insumos_movimientos.belongsTo(insumos, { as: "insumo", foreignKey: "insumo_id"});
-  insumos.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "insumo_id"});
   citas_medicas.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
   pacientes.hasMany(citas_medicas, { as: "citas_medicas", foreignKey: "paciente_id"});
   cobranzas.belongsTo(pacientes, { as: "paciente", foreignKey: "paciente_id"});
@@ -154,16 +152,20 @@ function initModels(sequelize) {
   presupuestos.hasMany(presupuestos_detalle, { as: "presupuestos_detalles", foreignKey: "presupuesto_id"});
   pacientes_dientes_historial.belongsTo(productos_servicios, { as: "producto_servicio", foreignKey: "producto_servicio_id"});
   productos_servicios.hasMany(pacientes_dientes_historial, { as: "pacientes_dientes_historials", foreignKey: "producto_servicio_id"});
+  stock_actualizar_detalle.belongsTo(productos_servicios, { as: "producto", foreignKey: "producto_id"});
+  productos_servicios.hasMany(stock_actualizar_detalle, { as: "stock_actualizar_detalles", foreignKey: "producto_id"});
+  stock_movimientos.belongsTo(productos_servicios, { as: "producto", foreignKey: "producto_id"});
+  productos_servicios.hasMany(stock_movimientos, { as: "stock_movimientos", foreignKey: "producto_id"});
   roles_permisos.belongsTo(roles, { as: "rol", foreignKey: "rol_id"});
   roles.hasMany(roles_permisos, { as: "roles_permisos", foreignKey: "rol_id"});
   usuarios_roles.belongsTo(roles, { as: "rol", foreignKey: "rol_id"});
   roles.hasMany(usuarios_roles, { as: "usuarios_roles", foreignKey: "rol_id"});
   stock_actualizar_detalle.belongsTo(stock_actualizar, { as: "stock_actualizar", foreignKey: "stock_actualizar_id"});
   stock_actualizar.hasMany(stock_actualizar_detalle, { as: "stock_actualizar_detalles", foreignKey: "stock_actualizar_id"});
-  stock_insumos_movimientos.belongsTo(stock_actualizar, { as: "stock_actualizar", foreignKey: "stock_actualizar_id"});
-  stock_actualizar.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "stock_actualizar_id"});
-  stock_insumos_movimientos.belongsTo(stock_actualizar_detalle, { as: "stock_actualizar_detalle", foreignKey: "stock_actualizar_detalle_id"});
-  stock_actualizar_detalle.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "stock_actualizar_detalle_id"});
+  stock_movimientos.belongsTo(stock_actualizar, { as: "stock_actualizar", foreignKey: "stock_actualizar_id"});
+  stock_actualizar.hasMany(stock_movimientos, { as: "stock_movimientos", foreignKey: "stock_actualizar_id"});
+  stock_movimientos.belongsTo(stock_actualizar_detalle, { as: "stock_actualizar_detalle", foreignKey: "stock_actualizar_detalle_id"});
+  stock_actualizar_detalle.hasMany(stock_movimientos, { as: "stock_movimientos", foreignKey: "stock_actualizar_detalle_id"});
   clientes.belongsTo(tipos_documentos, { as: "tipo_documento", foreignKey: "tipo_documento_id"});
   tipos_documentos.hasMany(clientes, { as: "clientes", foreignKey: "tipo_documento_id"});
   funcionarios.belongsTo(tipos_documentos, { as: "tipo_documento", foreignKey: "tipo_documento_id"});
@@ -174,8 +176,8 @@ function initModels(sequelize) {
   tipos_movimientos_stock.hasMany(stock_actualizar, { as: "stock_actualizars", foreignKey: "tipo_movimiento_id"});
   log_cambios.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
   usuarios.hasMany(log_cambios, { as: "log_cambios", foreignKey: "usuario_id"});
-  stock_insumos_movimientos.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
-  usuarios.hasMany(stock_insumos_movimientos, { as: "stock_insumos_movimientos", foreignKey: "usuario_id"});
+  stock_movimientos.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
+  usuarios.hasMany(stock_movimientos, { as: "stock_movimientos", foreignKey: "usuario_id"});
   usuarios_roles.belongsTo(usuarios, { as: "usuario", foreignKey: "usuario_id"});
   usuarios.hasMany(usuarios_roles, { as: "usuarios_roles", foreignKey: "usuario_id"});
 
@@ -198,7 +200,6 @@ function initModels(sequelize) {
     fichas_medicas,
     funcionarios,
     impuestos,
-    insumos,
     log_cambios,
     pacientes,
     pacientes_dientes,
@@ -212,7 +213,7 @@ function initModels(sequelize) {
     roles_permisos,
     stock_actualizar,
     stock_actualizar_detalle,
-    stock_insumos_movimientos,
+    stock_movimientos,
     tipos_documentos,
     tipos_movimientos_stock,
     usuarios,
