@@ -1,9 +1,9 @@
 const stockActualizarModel = require("../models/inicializar_modelos").stock_actualizar;
 const stockActualizarDetalleModel = require("../models/inicializar_modelos").stock_actualizar_detalle;
 const estadoMovimientoModel = require("../models/inicializar_modelos").estados_movimientos;
-const insumoModel = require("../models/inicializar_modelos").insumos;
+const productoModel = require("../models/inicializar_modelos").productos_servicios;
 const tipoMovimientoStockModel = require("../models/inicializar_modelos").tipos_movimientos_stock;
-const stockInsumoMovimientoModel = require("../models/inicializar_modelos").stock_insumos_movimientos;
+const stockMovimientoModel = require("../models/inicializar_modelos").stock_movimientos;
 const getEstadoInicialTabla = require('./estados_movimientos').getEstadoInicialTabla
 const moment = require('moment')
 const { Op } = require("sequelize")
@@ -47,8 +47,8 @@ module.exports = {
         async (det) => {
 
           const new_detalle = await stockActualizarDetalleModel.create({ stock_actualizar_id: stock_actualizar.id, ...det })
-          await stockInsumoMovimientoModel.create({
-            insumo_id: det.insumo_id,
+          await stockMovimientoModel.create({
+            producto_id: det.producto_id,
             stock_actualizar_id: stock_actualizar.id,
             stock_actualizar_detalle_id: new_detalle.id,
             cantidad: det.cantidad * tipo_movimiento.signo,
@@ -95,7 +95,7 @@ module.exports = {
       }).then(async stock_actualizar => {
         return await Promise.all(stock_actualizar.map(async stock_act => {
           let stock_actualizar_detalle = await stockActualizarDetalleModel.findAll({
-            include: { model: insumoModel, as: "insumo", where: { activo: true } },
+            include: { model: productoModel, as: "producto", where: { activo: true } },
             where: {
               [Op.and]: {
                 stock_actualizar_id: stock_act.id,
@@ -106,7 +106,7 @@ module.exports = {
             return Promise.all(await detalle.map(async det => {
               return {
                 ...det.dataValues,
-                insumo: `${det.insumo.nombre} - ${det.insumo.descripcion}`,
+                producto: `${det.producto.nombre} - ${det.producto.descripcion}`,
               }
             }))
           })

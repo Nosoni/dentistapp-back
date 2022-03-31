@@ -66,7 +66,8 @@ CREATE TABLE public.productos_servicios (
 	cantidad_minima int2 NULL, -- Cantidad mínima del producto en el stock
 	es_servicio bool NOT NULL DEFAULT false, -- Indica si es o no un servicio
 	activo bool NOT NULL DEFAULT true, -- Indica si el producto o servicio está o no activa
-	CONSTRAINT producto_servicio_chk CHECK ((precio > 0)),
+	CONSTRAINT producto_servicio_chk CHECK (precio > 0),
+	CONSTRAINT producto_servicio_cant_min CHECK (cantidad_minima > 0),
 	CONSTRAINT producto_servicio_pk PRIMARY KEY (id)
 );
 COMMENT ON TABLE public.productos_servicios IS 'Representa a los productos o servicios ofrecidos por la empresa';

@@ -20,7 +20,6 @@ INSERT INTO public.permisos (nombre,descripcion,activo) VALUES
 	 ('menu_ver_doctor','Concede acceso al menú doctor',true),
 	 ('menu_ver_especialidad','Concede acceso al menú especialidad',true),
 	 ('menu_ver_producto_servicio','Concede acceso al menú producto y servicio',true),
-	 ('menu_ver_insumo','Concede acceso al menú insumo',true),
 	 ('menu_ver_cita_medica','Concede acceso al menú cita médica',true),
 	 ('menu_ver_facturacion','Concede acceso al menú facturación',true),
 	 ('menu_ver_presupuesto','Concede acceso al menú presupuesto',true),
