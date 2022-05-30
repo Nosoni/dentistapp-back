@@ -75,7 +75,6 @@ COMMENT ON COLUMN public.productos_servicios.id IS 'Código identificador autoge
 COMMENT ON COLUMN public.productos_servicios.nombre IS 'Nombre del producto o servicio';
 COMMENT ON COLUMN public.productos_servicios.descripcion IS 'Descripción del producto o servicio';
 COMMENT ON COLUMN public.productos_servicios.precio IS 'Precio del producto o servicio';
-COMMENT ON COLUMN public.productos_servicios.tiempo IS 'Tiempo que conlleva la atención del servicio';
 COMMENT ON COLUMN public.productos_servicios.es_servicio IS 'Indica si es o no un servicio';
 COMMENT ON COLUMN public.productos_servicios.activo IS 'Indica si el producto o servicio está o no activa';
 
