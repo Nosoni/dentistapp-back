@@ -38,7 +38,9 @@ module.exports = {
         password: hash
       })
 
-      await actualizarUsuariosRoles(userCreate.dataValues.id, roles)
+      if (roles) {
+        await actualizarUsuariosRoles(userCreate.dataValues.id, roles)
+      }
 
       return res.status(200).json({ mensaje: "Usuario creado con éxito.", datos: userCreate })
     } catch (error) {
