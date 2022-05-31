@@ -155,7 +155,7 @@ module.exports = {
       const sequelize = stockMovimientoModel.sequelize
       const stock_bajo = await stockMovimientoModel.findAll({
         include: {
-          model: productosModel, as: "producto",
+          model: productoServicioModel, as: "producto",
         },
         attributes: ['producto_id',
           [sequelize.fn('sum', sequelize.col('cantidad')), 'stock']
